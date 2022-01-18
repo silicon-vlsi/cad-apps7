@@ -8,4 +8,4 @@ scripts, modules, configs, etc. for the CentOS 7 workstations
 - Clone the repo `# git clone git@github.com:silicon-vlsi/cad-apps7.git`
 - Add files: `# git add <files>`
 - Commit: `# git commit -m "comment" -a`
-- Push: `# git push`
+- Push: `# git push `
