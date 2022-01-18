@@ -1,0 +1,27 @@
+#%Module1.0#####################################################################
+##
+## null modulefile
+##
+## modulefiles/null.  Generated from null.in by configure.
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up SPECTRE Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis	"Sets up the Cadence SPECTRE Environment"
+
+# for Tcl script use only
+set     version      "211"
+
+conflict SPECTRE
+
+
+#setenv LICENSE_QUEUEING yes
+setenv SPECTREHOME /CAD/cadence/SPECTRE211
+
+#prepend-path LD_LIBRARY_PATH /Q/apps/ARC/ARChitect/lib:$env(CDSHOME)/tools/lib:/usr/X11R6/lib:/usr/lib:/lib
+append-path PATH            $env(SPECTREHOME)/bin:$env(SPECTREHOME)/tools.lnx86/bin:$env(SPECTREHOME)/tools.lnx86/dfII/bin
+

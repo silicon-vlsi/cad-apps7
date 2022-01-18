@@ -1,0 +1,27 @@
+#%Module1.0#####################################################################
+##
+## null modulefile
+##
+## modulefiles/null.  Generated from null.in by configure.
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up MMSIM Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis	"Sets up the Cadence MMSIM (Spectre,etc) Environment"
+
+# for Tcl script use only
+set     version      "151"
+
+conflict MMSIM
+
+
+#setenv LICENSE_QUEUEING yes
+setenv MMSIMHOME /CAD/cadence/MMSIM151
+
+#prepend-path LD_LIBRARY_PATH /Q/apps/ARC/ARChitect/lib:$env(CDSHOME)/tools/lib:/usr/X11R6/lib:/usr/lib:/lib
+append-path PATH            $env(MMSIMHOME)/tools/bin:$env(MMSIMHOME)/bin:$env(MMSIMHOME)/tools/dfII/bin:$env(MMSIMHOME)/tools.lnx86/bin:$env(MMSIMHOME)/tools.lnx86/dfII/bin
+
