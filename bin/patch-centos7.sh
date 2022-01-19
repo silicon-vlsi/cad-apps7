@@ -67,6 +67,15 @@ echo "*************************************"
 mount -l -t nfs | awk '{print $3}'
 
 echo "*************************************"
+echo " CHECKING FOR PERL MODULE Shell.pm "
+echo " Required for the Perl scripts." 
+echo " NOTE: The firsrt time cpan is run,"
+echo " it neds to get configured."
+echo " Choose defaults and rerun 'cpan Shell'"
+echo "*************************************"
+cpan Shell
+
+echo "*************************************"
 echo "CHECKING INSTALLED PACKAGES"
 echo "*************************************"
 pckarr=( \

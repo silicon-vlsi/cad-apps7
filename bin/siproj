@@ -1,0 +1,460 @@
+#!/usr/bin/env perl
+#
+use strict;
+use File::Copy qw(copy);
+use Getopt::Long;
+use Shell qw(pwd);
+
+my $today = `date +%D`;
+chomp($today);
+
+my @help_str = <<HELP;
+
+DESCRIPTION: Creates project area, if it doesn't exist, from a list 
+	     of approved projects listed in /CAD/apps7/bin/proj.list 
+             in /home/NIS/projects/<PROJNAME>/<REV>/work/<USER>
+
+USAGE:   $0      # creates project area
+	 $0 -m   # Creates a master project area instead for <USER>
+	 $0 -e   # prints the environment module (and the alias) required for the project. 
+   	 $0 -l   # Create the work area in the current directory.
+         $0 -q   # Query user technology (XFab+XKIT only)
+         $0 -u   # Update project area (XFAb+Xkit Only)
+         $0 -h   # This help 
+
+NOTE:
+	Before running the script, mkdir /home/NIS/projects/<PROJNAME>/<REV>/work and 
+	change owner/group to srout/users and chmod 775 work
+        PROJNAME and REV should be in uppercase although it maybe lower in proj.list
+HELP
+
+sub usage{print @help_str;}
+#
+
+# Variables for commandline options
+my $help;
+my $dry;	# Checks if there is going to be any problem creating the project.
+my $master;
+my $update;	# Flag to update the project
+my $qtech;	# Queries the technology of the user project.
+my $local;
+my $envOpt;
+
+##Get options
+##NOTE: Options dry/create/update are priority coded in that order. Only one of them executes
+GetOptions("help"=>\$help, "master"=>\$master, "env"=>\$envOpt, "local"=>\$local, "update" => \$update, "dry"=>\$dry, "qtech"=>\$qtech) or die(@help_str);
+#
+
+## Print usage for -help 
+die usage() if $help; 
+
+### -----------------------------------------------------------------------------------
+my $cmd_str;
+my @projTitle; 
+my @projRev; 
+my @projTech; 
+my @projMod; 
+my @projEnv;
+my @projAlias;
+my @projFab;
+my @projEDA;
+my %projInfo = ();
+my $ind=0;
+my $xkitStr;
+my $pdkDir="";
+
+### -----------------------------------------------------------
+### Read /CAD/apps7/bin/proj.list and create an array with all the 
+### available project
+### -----------------------------------------------------------
+my $projlist="proj.list";
+open INFILE, $projlist or die "Cannot read file $projlist: $!\n";
+while (<INFILE>) {
+	chomp($_);
+	if((/^\/\//) || (/^ /) || (/^$/)) {
+		next;
+	}
+	else {
+		($projTitle[$ind], $projRev[$ind], $projTech[$ind], $projMod[$ind], $projEnv[$ind], $projAlias[$ind], $projFab[$ind], $projEDA[$ind], @{$projInfo{$ind}}) = split;
+		#print "$ind : $projTitle[$ind]/$projRev[$ind]\t$projTech[$ind]\t$projMod[$ind]\t@{$projInfo{$ind}}\n";	
+		$ind++;
+	}
+}
+
+
+### -----------------------------------------------------------
+## Print the project list and get a valid input
+### -----------------------------------------------------------
+print "\n--------------------------------------\n";
+print "Choose from the List of valid projects:\n";
+print "---------------------------------------\n";
+for ($ind=1; $ind<=$#projTitle+1; $ind++){
+	print "[$ind] $projTitle[$ind-1]/$projRev[$ind-1] ($projTech[$ind-1],$projMod[$ind-1])\t$projFab[$ind-1]/$projEDA[$ind-1]\t @{$projInfo{$ind-1}} \n";
+}
+print "[$ind] Cancel\n";
+print "---------------------------------------\n";
+print " Please input your choice: ";
+my $PROJINP;
+my $validInput=0;
+while (!$validInput){
+	$PROJINP=int(<STDIN>);
+	if( $PROJINP > 0 and $PROJINP <= ($#projTitle+2) ) {
+		$validInput=1;
+	}
+	else { print "Please enter a valid input: "; }
+}
+print "\n\n";
+if ($PROJINP == ($#projTitle+2)) {exit;}
+
+### -----------------------------------------------------------
+## Assigning variables from proj.list 
+### -----------------------------------------------------------
+my $projname = $projTitle[$PROJINP-1];
+my $rev = $projRev[$PROJINP-1];
+my $tech = $projTech[$PROJINP-1];
+my $mod = $projMod[$PROJINP-1];
+my $env = $projEnv[$PROJINP-1];
+my $alias = $projAlias[$PROJINP-1];
+my $fab = $projFab[$PROJINP-1]; 
+my $eda = $projEDA[$PROJINP-1];
+## Name the svn repo in this format PROJNAME_REV_svn
+my $svnrepo = $projname.'_'.$rev.'_svn';
+
+### -----------------------------------------------------------
+## Setting up the Environment variables
+### -----------------------------------------------------------
+my $PROJ_DIR = $ENV{'SIPROJ_DIR'};
+my $PWD = $ENV{'PWD'};
+my $USERNAME = $ENV{'USER'};
+my @TMP_ARGV;
+my $xkitCmd = 'xkit';
+
+## Tanner PDKs are maintained in the SVN repo /PDK/tech_svn
+## NOTE: Older projects were maintained at /PDK/xfab/XKIT
+if($eda eq "tt18"){
+   $ENV{'T_DIR'} = "/PDK/tech_svn/xfab/XKIT";
+   $ENV{'X_DIR'} = "/PDK/tech_svn/xfab/XKIT";
+}
+else {
+   $ENV{'T_DIR'} = "/PDK/xfab/XKIT";
+   $ENV{'X_DIR'} = "/PDK/xfab/XKIT";
+}
+
+# IC 616 Environment
+if($eda eq "ic616"){
+   $ENV{PATH} = "$ENV{PATH}:/PDK/xfab/XKIT/x_all/cadence/xenv";
+   $ENV{'LM_LICENSE_FILE'} = '5280@VLSI-SRV-001';
+   $ENV{'CDS_LIC_FILE'} = '5280@VLSI-SRV-001'; 
+   $ENV{'CDS_AUTO_64BIT'} = 'ALL';
+   $ENV{'OA_HOME'} = '/CAD/IC616/oa_v22.43.054';
+   $ENV{'CDS_Netlisting_Mode'} = "Analog"; 
+   $ENV{'ICCHOME'} = "/CAD/IC616"; 
+   $ENV{'CDSHOME'} = "/CAD/IC616"; 
+   $ENV{PATH} = "$ENV{PATH}:/CAD/IC616/tools.lnx86/bin:/CAD/IC616/tools.lnx86/dfII/bin:/CAD/IC616/tools/dfII/bin:/CAD/IC616/tools/bin:/CAD/IC616/bin"; 
+}
+## For Tanner v2018
+## Old xkit command
+#   $xkitCmd = 'tclsh $X_DIR/x_all/tanner/xenv/xkit.tbc ';
+if($eda eq "tt18"){
+  ## NOTE: THere is a bug in the installation where the shared Lib .so is 
+  ## in TannerTools but the script xkit is expecting it in xenv so created a soft link
+  $xkitCmd = 'tclsh $X_DIR/x_all/siemens/xenv/TannerTools/xkit.tbc ';
+}
+
+#Check if PROJ_DIR exists
+unless( -e "$PROJ_DIR"){
+    printf("ERROR: SIPROJ_DIR environment variable is not defined\n");
+    printf("       Please define it eg. setenv SIPROJ_DIR .....\n");
+    printf("       preferably in /etc/profile.d/silicon.csh  ....\n");
+}
+
+#
+if($master){
+	$USERNAME = "master";
+}
+
+### -----------------------------------------------------------
+## If $envOpt then print the module name and get out.
+### -----------------------------------------------------------
+if($envOpt){
+	print "\nmodule load $env \n";
+	print "OR\n use the alias \'$alias\' to load the module\n";
+	#print STDERR $env;
+	exit;
+}
+
+print "---------------------------------------\n";
+print "\nYour choice: $projname/$rev, $tech, $mod\n";
+print "---------------------------------------\n";
+
+### -----------------------------------------------------------
+#ALl the projects will be named with UpperCase
+### -----------------------------------------------------------
+$projname = uc($projname);
+$rev = uc($rev);
+
+### -----------------------------------------------------------
+#Check if the project directory exists
+### -----------------------------------------------------------
+my $proj_path = $PROJ_DIR.'/'.$projname.'/'.$rev;
+#my $proj_path_userWA = $proj_path.'/work/'.$USERNAME;
+## If the EDA tool is Tanner, then create the work area in
+#  work/<EDA>-<USER> format OR work/<USER>
+my $proj_path_userWA;
+if($eda eq "tt18"){ 
+	$proj_path_userWA = $proj_path.'/work/'.$eda.'-'.$USERNAME;
+}
+else {
+	$proj_path_userWA = $proj_path.'/work/'.$USERNAME;
+}
+
+##Check if the project path exist /home/NIS/projects
+if( not (-e $proj_path)){
+    print "\n ERROR: $proj_path DOES NOT EXIST \n\n";
+    exit;
+}
+elsif( -e $proj_path and (not(-d $proj_path))){
+    print "\n ERROR: $proj_path IS NOT A DIRECTORY\n\n";
+    exit;
+}
+
+### -----------------------------------------------------------
+##---------- Create project area if not created  -----------
+### -----------------------------------------------------------
+if($qtech){
+  if($fab eq 'xfab'){
+    ##Check if User Work area already exists
+    if(not(-e $proj_path_userWA)){
+        print "\n  ERROR: CANNOT QUERY TECh $proj_path_userWA\n WORK AREA DOES NOT EXIST\n\n";
+        exit;
+    }
+    ## Check if the specified technology matches the master project 
+    my $user_cdsinit = $proj_path.'/work/'.$USERNAME.'/.cdsinit';
+    my $user_tech;
+    open(CDSINIT, $user_cdsinit) or die("ERROR: CANNOT OPEN $user_cdsinit ...\n\n");
+    while(<CDSINIT>){
+        if(/^\s*T_TECH/){
+            ($user_tech) = $_ =~ /^\s*T_TECH.*"\s*(.*)\s*".*$/;
+        }
+    }
+    close(CSDINIT);
+    print "\n\n TECHNOLOGY FOR project $proj_path_userWA IS $user_tech \n\n"; 
+	print "Query Tech\n";
+  }
+}
+elsif($update){
+  chdir($proj_path_userWA) or \
+	die("ERROR: Could not change directory to $proj_path_userWA\n\n");
+  if($fab eq 'xfab'){
+      if($eda eq 'ic616'){
+          not(system('xkit -u -n')) || die("ERROR: Cannot execute xkit -u -n");
+      }
+      elsif($eda eq 'tt18'){
+          $xkitStr = $xkitCmd.' -u';
+          not(system($xkitStr)) || die("ERROR: Cannot execute $xkitStr");
+      }
+      else{
+          print '';
+          print 'SORRY, NO OPTION TO UPDATE the CHOSEN PROJECT!!';
+          print '';
+      }
+  }
+  elsif($fab eq 'tsmc'){
+    if($tech eq 't28hpc'){
+        my $cdsinitUpdate = 0;
+	open(CDSINIT, ".cdsinit") || die("Could not open .cdsinit");
+        while(<CDSINIT>){
+          if(/cdsinit-calibre.il/){ 
+            $cdsinitUpdate = 1;
+          }
+        }
+        close(CDSINIT);
+        if(not $cdsinitUpdate){
+	  open(CDSINIT, ">>.cdsinit") || die("Could not open .cdsinit");
+          print(CDSINIT ";; --------------Load Calibre skill ---------------\n");
+	  print(CDSINIT "loadi(\"/CAD/apps/etc/cdsinit-calibre.il\")\n;;\n");
+          close(CDSINIT);
+          print("Added | to .cdsinit ...\n");
+          print("      v\n");
+	  print("loadi(\"/CAD/apps/etc/cdsinit-calibre.il\")\n\n");
+        }
+        else{
+          print("\n .cdsinit is up to date. Nothing to update\n\n\n");
+        }
+    }
+  }
+  else{
+      print '';
+      print ' SORRY, NO OPTION TO UPDATE the CHOSEN PROJECT!!';
+      print '';
+  }
+}
+else{
+    if(-e $proj_path_userWA and !$local){
+        print "\nERROR: Project area alrady exists ..\n\n";
+        exit;
+    }	
+    ### -------------------
+    ### CREATE PROJECT AREA
+    ### -------------------
+    else {
+   	&createWA(); 
+    }
+}
+  
+############################################################################
+## SUBROUTINES
+############################################################################
+my $master_setup_path;
+my $nomaster='n';
+### -----------------------------------------------------------
+## Function to create cds.lib and .cdsinit_personal
+### -----------------------------------------------------------
+sub createWA{
+	print "\n Creating Project Work Area ..\n";
+	print "Project: $projname\n";
+	print "Revision: $rev\n";
+	print "User: $USERNAME \n";
+	print "Path: $proj_path_userWA \n\n";
+
+	## NOTE: system returns zero on sucess, therefore not(system())
+	### ---------------------------------------------------
+	## Create directory in project path if not local 
+	### ---------------------------------------------------
+	if(!$local){
+		mkdir($proj_path_userWA) or \
+			die("ERROR: Could not make directory to $proj_path_userWA\n\n");
+		chdir($proj_path_userWA) or \
+			die("ERROR: Could not change directory to $proj_path_userWA\n\n");
+	}
+	### ---------------------------------------------------
+	# Create X-Fab related 'xkit' string
+	### ---------------------------------------------------
+    	$master_setup_path = $proj_path.'/work/master/.xkit/latest.setup';
+        if( ($fab eq "xfab") and ($eda eq "ic616")){
+                $xkitStr = $xkitCmd.' -t '.$tech.' -n ';
+		## If there is a module, pass it with -m opt.
+		if($mod){
+			$xkitStr = $xkitStr.' --modules '.$mod.' ';
+		}
+		## Create the xkit command String
+		if(-e $master_setup_path and $master){
+			print "MASTER project WA already exists \n\n";
+			exit;
+		}
+		elsif(-e $master_setup_path){
+    			$xkitStr = $xkitStr.' -s '.$master_setup_path.' -n ';
+		}
+		elsif(!$master){
+			print " WARNING!! No master work area \n\n";
+			#print " Do you want to Continue [y/Y]? ";
+			#$nomaster = <STDIN>;
+			#chomp($nomaster);
+			#if($nomaster eq ('y' or 'Y')){
+			#	print " Creating WA without a master work area \n\n";
+			#}
+			#else {
+			#	print " Create the master library using the -m option \n\n";
+			#	exit;
+			#}
+		}
+		### ---------------------------------------------------
+    		##Now execute the xkit command to create the XFAB project.
+		### ---------------------------------------------------
+    		not(system($xkitStr)) or die("ERROR EXECUTING: $xkitStr \n\n");
+	}
+        elsif( ($fab eq "xfab") and ($eda eq "tt18")){
+            # Execute the tclsh script for tanner 
+            $xkitStr = $xkitCmd.' -t '.$tech;
+	    if($mod){
+		$xkitStr = $xkitStr.' -m '.$mod.' ';
+	    }
+    	    not(system($xkitStr)) or die("ERROR EXECUTING: $xkitStr \n\n");
+            ## Checkout the SVN database for project Xt018-20/A0
+            if( $projname.'-'.$rev eq 'XT018-20-A0'){
+    	      #not(system('svn checkout svn+ssh://svn@54.254.226.43/home/svn/repos/feynman_svn')) or die("ERROR EXECUTING: svn checkout \n\n");
+    	      print "*** SVN repo IS NOT checked out!! **";
+              print "*** If you need the svn repo, manually checkout in the project area:";
+    	      print "svn checkout svn+ssh://svn@54.254.226.43/home/svn/repos/feynman_svn";
+
+            }
+            else{
+    	      #not(system('svn checkout svn+ssh://svn@54.254.226.43/home/svn/repos/'.$svnrepo)) or die("ERROR EXECUTING: svn checkout \n\n");
+    	      print "*** SVN repo IS NOT checked out!! **";
+              print "*** If you need the svn repo, manually checkout in the project area:";
+    	      my $svnStr = 'svn checkout svn+ssh://svn@54.254.226.43/home/svn/repos/'.$svnrepo;
+              print "$svnStr";
+            }
+        }
+
+	my $cdsinitFile=".cdsinit";
+	##_---------------------------------------------------------------
+	##Add the Silicon customization to .cdsinit_personal/.cdsinit for IC616
+	##_---------------------------------------------------------------
+	if ($eda eq "ic616"){
+		if($fab eq "xfab"){ 
+			$cdsinitFile=".cdsinit_personal";
+		}
+		open(CDSINIT, ">>$cdsinitFile") || die("Could not open $cdsinitFile");
+		my $cdsinitProj = 'cdsinit-'.$projname.'-'.$rev.'.il';
+		print(CDSINIT ";; ------------------------------------------\n");
+		print(CDSINIT ";; Silicon's customization autogenerated by \n");
+		print(CDSINIT ";; $0 on $today \n");
+		print(CDSINIT ";; ------------------------------------------\n");
+		print(CDSINIT "printf(\"\\n LOADING SILICON CUSTOMIZATION from \\n \")\n");
+		print(CDSINIT "printf(\" /CAD/apps/etc/$cdsinitProj \\n\\n \")\n");
+		print(CDSINIT "loadi(\"/CAD/apps/etc/$cdsinitProj\")\n\n");
+		##Load the Calibre skill scripts for the projects that are calibre ready
+		if($tech eq "t28hpc"){
+		    print(CDSINIT ";; --------------Load Calibre skill ---------------\n");
+		    print(CDSINIT "loadi(\"/CAD/apps/etc/cdsinit-calibre.il\")\n\n");
+		 } 
+		close(CDSINIT);
+		##_--------------------------------------------------------------
+		##Add the project directory location to cds.lib
+		##_---------------------------------------------------------------
+		open(CDSLIB, ">>cds.lib") || die("Could not open cds.lib");
+		my $cdslibProj = 'cds-'.$projname.'-'.$rev.'.lib';
+		print(CDSLIB "## ------------------------------------------\n");
+		print(CDSLIB "## Master Project Library, autogenerated by \n");
+		print(CDSLIB "## $0 on $today \n");
+		print(CDSLIB "## ------------------------------------------\n");
+		print(CDSLIB "INCLUDE /CAD/apps/etc/$cdslibProj \n"); 
+		print(CDSLIB "## ------------------------------------------\n");
+		close(CDSLIB);
+		##_---------------------------------------------------------------
+		## Create links to display.drf and assura_tech.lib for 
+		## TSMC 0.18um  
+		##_---------------------------------------------------------------
+		if($tech eq "t018m6"){
+			not(system("ln -s /PDK/TSMC/180-MS-RF-G/PDK/Cadence-OA/t018cmsp018k3_1_0a/display.drf .")) || die("ERROR: Could not link display.drf\n");
+			not(system("echo \"DEFINE tsmc18 /PDK/TSMC/180-MS-RF-G/PDK/Cadence-OA/t018cmsp018k3_1_0a/Assura\" > assura_tech.lib")) || die("ERROR: Could not create assura_tech.lib \n");
+		}
+		##_---------------------------------------------------------------
+		## Create links to display.drf and assura_tech.lib for 
+		## TSMC 28nm HPC (Project Ampere)
+		##_---------------------------------------------------------------
+		if($tech eq "t28hpc"){
+                        my $pdkDir="/PDK/TSMC/28HPC-PLUS-RF/PDK/TSMC-iPDK";
+			not(system("cp $pdkDir/display.drf .")) || die("ERROR: Could not copy display.drf\n");
+			not(system("ln -s $pdkDir/models .")) || die("ERROR: Could not link models\n");
+			not(system("ln -s $pdkDir/Calibre .")) || die("ERROR: Could not link Calibre\n");
+		}
+	}
+	##_---------------------------------------------------------------
+	## For Tanner 2018
+	##_---------------------------------------------------------------
+	elsif($eda eq "tt18"){
+		open(LIBDEF, ">>lib.defs") || die("Could not open lib.defs");
+		#my $tt18libProj = 'tanner-'.$projname.'-'.$rev.'.lib';
+		print(LIBDEF "## ------------------------------------------\n");
+		print(LIBDEF "## Post XFab customization, autogenerated by \n");
+		print(LIBDEF "## $0 on $today \n");
+		print(LIBDEF "## ------------------------------------------\n");
+		#print(LIBDEF "## NOTE: the order below is important otherwise\n");
+		#print(LIBDEF "##       pcells are messed up\n");
+		print(LIBDEF "INCLUDE $svnrepo/project.defs\n"); 
+		print(LIBDEF "## ------------------------------------------\n");
+		close(LIBDEF);
+	}
+}
