@@ -20,8 +20,10 @@ USAGE:   $0 [OPTIONS]    # creates project area
 	 -e   # prints the environment module (and the alias) required for the project. 
 	 -m   # Creates a master project area instead for <USER>
    	 -l   # Create the work area in the current directory.
-         -q   # Query user technology (XFab+XKIT only)
-         -u   # Update project area (XFAb+Xkit Only)
+         -q   # Query user technology : For XFAB, it uses the xkit query option
+                For XFAB cadence it checks the .cdsinit for T_TECH assignment 
+         -u   # Update project area. For xfab, uses the xkit -u option 
+                For tsmc 28nm: it checks if the .cdsinit has cdsinit-calibre.il 
          -h   # This help 
 
 NOTE:
@@ -43,6 +45,8 @@ my $local;
 my $envOpt;
 my $apps7path="/CAD/apps7/bin";
 my $projlist="proj-sit.list";	#Default
+my $cadence=0;
+my $tanner=0;
 
 ##Get options
 ##NOTE: Options dry/create/update are priority coded in that order. Only one of them executes
@@ -125,6 +129,16 @@ my $eda = $projEDA[$PROJINP-1];
 my $svnrepo = $projname.'_'.$rev.'_svn';
 
 ### -----------------------------------------------------------
+## Setting cadence or tanner
+### -----------------------------------------------------------
+if( ($eda eq "tt18") or ($eda eq "tt20")){
+  $tanner=1;
+}
+if( ($eda eq "ic616") or ($eda eq "ic618")){
+  $cadence=1;
+}
+
+### -----------------------------------------------------------
 ## Setting up the Environment variables
 ### -----------------------------------------------------------
 my $PROJ_DIR = $ENV{'SIPROJ_DIR'};
@@ -135,7 +149,7 @@ my $xkitCmd = 'xkit';
 
 ## Tanner PDKs for xt018/xdh10 are maintained in the SVN repo /PDK/tech_svn/xfab/XKIT
 ## Rest maintained at /PDK/xfab/XKIT
-if(($eda eq "tt18") and (($tech eq "xt018") or ($tech eq "xdh10"))){
+if($tanner and (($tech eq "xt018") or ($tech eq "xdh10"))){
    $ENV{'T_DIR'} = "/PDK/tech_svn/xfab/XKIT";
    $ENV{'X_DIR'} = "/PDK/tech_svn/xfab/XKIT";
 }
@@ -148,32 +162,31 @@ else {
 if($eda eq "ic616" ){
    $ENV{'ICCHOME'} = $ENV{'CDSHOME'}= "/CAD/cadence/IC616"; 
    $ENV{'OA_HOME'} = "$ENV{ICCHOME}/oa_v22.43.054";
-   $ENV{PATH} = "$ENV{PATH}:$ENV{ICCHOME}/tools.lnx86/bin:$ENV{ICCHOME}/tools.lnx86/dfII/bin:$ENV{ICCHOME}/tools/dfII/bin:$ENV{ICCHOME}/tools/bin:$ENV{ICCHOME}/bin"; 
 }
 elsif($eda eq "ic618" ){
    $ENV{'ICCHOME'} = $ENV{'CDSHOME'}= "/CAD/cadence/IC618"; 
    $ENV{'OA_HOME'} = "$ENV{ICCHOME}/oa_v22.60.063";
-   $ENV{PATH} = "$ENV{PATH}:$ENV{ICCHOME}/tools.lnx86/bin:$ENV{ICCHOME}/tools.lnx86/dfII/bin:$ENV{ICCHOME}/tools/dfII/bin:$ENV{ICCHOME}/tools/bin:$ENV{ICCHOME}/bin"; 
 }
 
-if(($eda eq "ic618") or ($eda eq "ic616")){
+if($cadence){
    $ENV{PATH} = "$ENV{PATH}:/PDK/xfab/XKIT/x_all/cadence/xenv";
    $ENV{'LM_LICENSE_FILE'} = "$ENV{CDSLICPORT}\@cdslicsrv";
    $ENV{'CDS_LIC_FILE'} = $ENV{LM_LICENSE_FILE};  
    $ENV{'CDS_AUTO_64BIT'} = 'ALL';
    $ENV{'CDS_Netlisting_Mode'} = "Analog"; 
+   $ENV{PATH} = "$ENV{PATH}:$ENV{ICCHOME}/tools.lnx86/bin:$ENV{ICCHOME}/tools.lnx86/dfII/bin:$ENV{ICCHOME}/tools/dfII/bin:$ENV{ICCHOME}/tools/bin:$ENV{ICCHOME}/bin"; 
 }
 ## For Tanner v2018
 ## Old xkit command
 #   $xkitCmd = 'tclsh $X_DIR/x_all/tanner/xenv/xkit.tbc ';
-if($eda eq "tt18"){
+if($tanner){
   ## NOTE: THere is a bug in the installation where the shared Lib .so is 
   ## in TannerTools but the script xkit is expecting it in xenv so created a soft link
   $xkitCmd = 'tclsh $X_DIR/x_all/siemens/xenv/TannerTools/xkit.tbc ';
 }
 
 #Check if SIPROJ_DIR exists
-unless( -e $PROJ_DIR){
+unless( -e $PROJ_DIR and -d $PROJ_DIR){
     printf("ERROR: SIPROJ_DIR environment variable is not defined\n");
     printf("       Please define it eg. setenv SIPROJ_DIR .....\n");
     printf("       preferably in /etc/profile.d/silicon.csh  ....\n");
@@ -212,14 +225,14 @@ my $proj_path = $PROJ_DIR.'/'.$projname.'/'.$rev;
 ## If the EDA tool is Tanner, then create the work area in
 #  work/<EDA>-<USER> format OR work/<USER>
 my $proj_path_userWA;
-if($eda eq "tt18"){ 
+if($tanner){ 
 	$proj_path_userWA = $proj_path.'/work/'.$eda.'-'.$USERNAME;
 }
 else {
 	$proj_path_userWA = $proj_path.'/work/'.$USERNAME;
 }
 
-##Check if the project path exist /home/NIS/projects
+##Check if the project path exist /home/nfs1/projects
 if( not (-e $proj_path)){
     print "\n ERROR: $proj_path DOES NOT EXIST \n\n";
     exit;
@@ -257,10 +270,10 @@ elsif($update){
   chdir($proj_path_userWA) or \
 	die("ERROR: Could not change directory to $proj_path_userWA\n\n");
   if($fab eq 'xfab'){
-      if($eda eq 'ic616'){
+      if($cadence){
           not(system('xkit -u -n')) || die("ERROR: Cannot execute xkit -u -n");
       }
-      elsif($eda eq 'tt18'){
+      elsif($tanner){
           $xkitStr = $xkitCmd.' -u';
           not(system($xkitStr)) || die("ERROR: Cannot execute $xkitStr");
       }
