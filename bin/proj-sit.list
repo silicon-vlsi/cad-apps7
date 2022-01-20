@@ -1,0 +1,11 @@
+// List of valid projects that can be created by the script xproj
+// Project Name format: <TECHNOLOGY>-<YEAR>
+// REVISION: T0 : Training
+// File Format:
+// ProjectName	Revision	Technology	Module	Environmment Module			alias 		Fab	EDA	Comment
+//-------------------------------------------------------------------------------------------------------------------------------------------
+XC06M3-18	A0		xc06m3		0	project/cad-xfab/xc06m3-18-a0-1.0	xc06		xfab	ic618	0.6um/3M/CMOS-TapedOut(TO)
+T018M6-19	A0		t018m6		0	project/cad-tsmc/t018m6-19-a0		t018		tsmc	ic618	0.18um/1P6M/MS-RF-G
+neumann		rev1		xt018		1243	project/cad-xfab/neumann-rev1		von		xfab	ic618	0.18um-200V-SOI/RISCV-uC
+neumann		rev1		xt018		1243	project/cad-xfab/neumann-rev1-tt	von-tt		xfab	tt20	0.18um-200V-SOI/RISCV-uC
+ampere		rev1		t28hpc		0	project/cad-tsmc/ampere-rev1		amp		tsmc	ic618	28nm/CMOS/HPC+RF/Innatera

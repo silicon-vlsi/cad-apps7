@@ -14,13 +14,15 @@ DESCRIPTION: Creates project area, if it doesn't exist, from a list
 	     of approved projects listed in /CAD/apps7/bin/proj.list 
              in /home/NIS/projects/<PROJNAME>/<REV>/work/<USER>
 
-USAGE:   $0      # creates project area
-	 $0 -m   # Creates a master project area instead for <USER>
-	 $0 -e   # prints the environment module (and the alias) required for the project. 
-   	 $0 -l   # Create the work area in the current directory.
-         $0 -q   # Query user technology (XFab+XKIT only)
-         $0 -u   # Update project area (XFAb+Xkit Only)
-         $0 -h   # This help 
+USAGE:   $0 [OPTIONS]    # creates project area
+         -p   # project list file name. default proj-sit.list
+                NOTE: The file should exist in /CAD/apps7/bin  
+	 -e   # prints the environment module (and the alias) required for the project. 
+	 -m   # Creates a master project area instead for <USER>
+   	 -l   # Create the work area in the current directory.
+         -q   # Query user technology (XFab+XKIT only)
+         -u   # Update project area (XFAb+Xkit Only)
+         -h   # This help 
 
 NOTE:
 	Before running the script, mkdir /home/NIS/projects/<PROJNAME>/<REV>/work and 
@@ -39,10 +41,12 @@ my $update;	# Flag to update the project
 my $qtech;	# Queries the technology of the user project.
 my $local;
 my $envOpt;
+my $apps7path="/CAD/apps7/bin";
+my $projlist="proj-sit.list";	#Default
 
 ##Get options
 ##NOTE: Options dry/create/update are priority coded in that order. Only one of them executes
-GetOptions("help"=>\$help, "master"=>\$master, "env"=>\$envOpt, "local"=>\$local, "update" => \$update, "dry"=>\$dry, "qtech"=>\$qtech) or die(@help_str);
+GetOptions("help"=>\$help, "projlist=s"=>\$projlist, "master"=>\$master, "env"=>\$envOpt, "local"=>\$local, "update" => \$update, "dry"=>\$dry, "qtech"=>\$qtech) or die(@help_str);
 #
 
 ## Print usage for -help 
@@ -67,7 +71,7 @@ my $pdkDir="";
 ### Read /CAD/apps7/bin/proj.list and create an array with all the 
 ### available project
 ### -----------------------------------------------------------
-my $projlist="proj.list";
+$projlist=$apps7path.'/'.$projlist;
 open INFILE, $projlist or die "Cannot read file $projlist: $!\n";
 while (<INFILE>) {
 	chomp($_);
@@ -129,9 +133,9 @@ my $USERNAME = $ENV{'USER'};
 my @TMP_ARGV;
 my $xkitCmd = 'xkit';
 
-## Tanner PDKs are maintained in the SVN repo /PDK/tech_svn
-## NOTE: Older projects were maintained at /PDK/xfab/XKIT
-if($eda eq "tt18"){
+## Tanner PDKs for xt018/xdh10 are maintained in the SVN repo /PDK/tech_svn/xfab/XKIT
+## Rest maintained at /PDK/xfab/XKIT
+if(($eda eq "tt18") and (($tech eq "xt018") or ($tech eq "xdh10"))){
    $ENV{'T_DIR'} = "/PDK/tech_svn/xfab/XKIT";
    $ENV{'X_DIR'} = "/PDK/tech_svn/xfab/XKIT";
 }
@@ -140,17 +144,24 @@ else {
    $ENV{'X_DIR'} = "/PDK/xfab/XKIT";
 }
 
-# IC 616 Environment
-if($eda eq "ic616"){
+# IC6 Environment
+if($eda eq "ic616" ){
+   $ENV{'ICCHOME'} = $ENV{'CDSHOME'}= "/CAD/cadence/IC616"; 
+   $ENV{'OA_HOME'} = "$ENV{ICCHOME}/oa_v22.43.054";
+   $ENV{PATH} = "$ENV{PATH}:$ENV{ICCHOME}/tools.lnx86/bin:$ENV{ICCHOME}/tools.lnx86/dfII/bin:$ENV{ICCHOME}/tools/dfII/bin:$ENV{ICCHOME}/tools/bin:$ENV{ICCHOME}/bin"; 
+}
+elsif($eda eq "ic618" ){
+   $ENV{'ICCHOME'} = $ENV{'CDSHOME'}= "/CAD/cadence/IC618"; 
+   $ENV{'OA_HOME'} = "$ENV{ICCHOME}/oa_v22.60.063";
+   $ENV{PATH} = "$ENV{PATH}:$ENV{ICCHOME}/tools.lnx86/bin:$ENV{ICCHOME}/tools.lnx86/dfII/bin:$ENV{ICCHOME}/tools/dfII/bin:$ENV{ICCHOME}/tools/bin:$ENV{ICCHOME}/bin"; 
+}
+
+if(($eda eq "ic618") or ($eda eq "ic616")){
    $ENV{PATH} = "$ENV{PATH}:/PDK/xfab/XKIT/x_all/cadence/xenv";
-   $ENV{'LM_LICENSE_FILE'} = '5280@VLSI-SRV-001';
-   $ENV{'CDS_LIC_FILE'} = '5280@VLSI-SRV-001'; 
+   $ENV{'LM_LICENSE_FILE'} = "$ENV{CDSLICPORT}\@cdslicsrv";
+   $ENV{'CDS_LIC_FILE'} = $ENV{LM_LICENSE_FILE};  
    $ENV{'CDS_AUTO_64BIT'} = 'ALL';
-   $ENV{'OA_HOME'} = '/CAD/IC616/oa_v22.43.054';
    $ENV{'CDS_Netlisting_Mode'} = "Analog"; 
-   $ENV{'ICCHOME'} = "/CAD/IC616"; 
-   $ENV{'CDSHOME'} = "/CAD/IC616"; 
-   $ENV{PATH} = "$ENV{PATH}:/CAD/IC616/tools.lnx86/bin:/CAD/IC616/tools.lnx86/dfII/bin:/CAD/IC616/tools/dfII/bin:/CAD/IC616/tools/bin:/CAD/IC616/bin"; 
 }
 ## For Tanner v2018
 ## Old xkit command
@@ -161,8 +172,8 @@ if($eda eq "tt18"){
   $xkitCmd = 'tclsh $X_DIR/x_all/siemens/xenv/TannerTools/xkit.tbc ';
 }
 
-#Check if PROJ_DIR exists
-unless( -e "$PROJ_DIR"){
+#Check if SIPROJ_DIR exists
+unless( -e $PROJ_DIR){
     printf("ERROR: SIPROJ_DIR environment variable is not defined\n");
     printf("       Please define it eg. setenv SIPROJ_DIR .....\n");
     printf("       preferably in /etc/profile.d/silicon.csh  ....\n");
