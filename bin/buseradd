@@ -1,0 +1,423 @@
+#!/usr/bin/env python
+
+import numpy as np
+import pwd
+import string
+import random
+import sys, getopt
+import os
+import smtplib
+import base64
+import subprocess
+
+
+class user:
+    def __init__(self, regd_no, name, dept, phone, email, username, home_dir, skel_dir, quota, groups,  descrip):
+        self.regd_no = regd_no
+        self.name = name
+        self.dept = dept
+        self.phone = phone
+        self.email = email
+        self.username = username
+	self.homedir = home_dir
+	self.skeldir = skel_dir
+	self.quota = quota
+	self.descrip = descrip
+        self.groups = groups
+        self.pwd = ''
+
+    def __str__(self):
+        s = self.name+':'+self.dept+':'+self.email+':'+self.username
+        return s
+
+        
+def del_batch_users(csvFile, test=True):
+    """
+    """
+    user_list = read_user_csv(csvFile, skipRows=5)
+
+    for user in user_list:
+        username = user.username
+        print 'Deleting user '+username+' ....'
+        del_cmd = 'userdel -rf '+username
+        if(test):
+            print del_cmd
+        else:
+            #os.system(del_cmd)
+            try:
+                subprocess.call(del_cmd, shell=True)
+            except OSError:
+                print 'OS ERROR!! while deleting  user'
+                createUser = False
+         
+
+def pwd_gen():
+    """
+    """
+    characters = string.ascii_letters + string.digits #string.punctuation
+
+    password = ""
+    password_length = 7 #random.randint(8, 16)
+
+    for x in range(password_length):
+       char = random.choice(characters)
+       password = password + char
+
+    return password
+
+def initialize_smtp_server(GMAIL_SMTP_SERVER, GMAIL_SMTP_PORT, GMAIL_EMAIL, GMAIL_ENCSTR):
+    '''
+    http://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts?page=0,0
+    This function initializes and greets the smtp server.
+    It logs in using the provided credentials and returns 
+    the smtp server object as a result.
+    '''
+    smtpserver = smtplib.SMTP(GMAIL_SMTP_SERVER, GMAIL_SMTP_PORT)
+    smtpserver.ehlo()
+    smtpserver.starttls()
+    smtpserver.ehlo()
+    smtpserver.login(GMAIL_EMAIL, GMAIL_ENCSTR)
+    return smtpserver
+ 
+def send_mail(email, name, username, password):
+    """
+    NOTE: The first time this script may fail depending on the 
+    security settings. Login to the gmail account and go to the
+    security section and make sure "allow less secure app" is 
+    turned ON.
+    """
+    GMAIL_SMTP_SERVER = "smtp.gmail.com"
+    GMAIL_SMTP_PORT = 587
+    #GMAIL_EMAIL = "vlis@silicon.ac.in"
+    #GMAIL_ENCSTR = base64.b64decode("JENMMTgwbm0=") 
+    ## Use "import base64 \n base64.b64encode("stringToEncode")" to generate the encoded string
+    GMAIL_EMAIL = "silicon.ee.vlsi@gmail.com"
+    GMAIL_ENCSTR = base64.b64decode("dmxzaTE4MG5t") 
+
+    to_email = email
+    from_email = GMAIL_EMAIL
+    subj = "Your new Linux user account"
+    header = "To:%s\nFrom:%s\nSubject:%s \n" % (to_email,
+            from_email, subj)
+    # Hard-coded templates are not best practice.
+    msg_body = """
+    Hello %s,
+    **THIS IS AN AUTO GENERATED EMAIL, Please DO NOT REPLY**
+    Your new Linux account for Advance VLSI Lab is created.
+    The credentials for login are:
+    username: %s
+    password: %s
+
+    Thank You.""" % (name, username, password)
+    content = header + "\n" + msg_body
+    smtpserver = initialize_smtp_server(GMAIL_SMTP_SERVER, GMAIL_SMTP_PORT, GMAIL_EMAIL, GMAIL_ENCSTR)
+    smtpserver.sendmail(from_email, to_email, content)
+    smtpserver.close()
+
+
+     
+def read_user_csv(csvFile, skipRows):
+    """
+    Reads the CSV file with user data and create the user list objects
+    """
+    user_list = []
+    data = np.loadtxt(csvFile, delimiter=",", skiprows=skipRows, dtype=np.ndarray)
+   
+    #Check if only one row
+    # Skip the last column for description
+    if((data.shape)[0] == data.size):
+        user_list.append(user(data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11]))
+    else:
+        for i in range((data[:,0]).size):
+            user_list.append(user(data[i,1], data[i,2], data[i,3], data[i,4], data[i,5], data[i,6], data[i,7], data[i,8], data[i,9], data[i,10], data[i,11]))
+
+    return user_list 
+
+def check_users_exist(csvFile):
+    """
+    """
+    user_list = read_user_csv(csvFile, skipRows=5)
+    user_exist = False
+    
+    for user in user_list:
+        user_exist = check_user_exist(user.username)
+
+    return user_exist
+
+def check_user_exist2(username):
+    """
+    """
+    user_exist = False
+    
+    try:
+        pwd.getpwnam(username)
+        print 'User ' + username + ' exists'
+        user_exist = True
+    except KeyError:
+            fake_var =0 
+
+    return user_exist
+
+def check_user_exist(username):
+    """
+    """
+    #if (pwd.getpwnam(username).pw_name == username):
+    try:
+        pwd.getpwnam(username)
+	return True
+    except KeyError:
+        return False
+
+def create_user(username, add_groups, comment, home, shell, skel, test=True):
+    """
+    """
+    createUser = True
+    changePwd = True
+    if (not check_user_exist(username)):
+        ## Useradd options:
+        ## -m : create home
+        ## -G : additional groups (NOTE: no whitespace between commas.)
+        usr_cmd_str = "/usr/sbin/useradd -s "+shell +" -d "+home+" -G "+add_groups+" -c "+comment+" -k "+skel+" -m "+ username
+        pwd = pwd_gen()
+        pwd_cmd_str = 'echo "'+username+':'+pwd+'" | /usr/sbin/chpasswd'
+        if(test):
+            print usr_cmd_str
+            print pwd_cmd_str
+        else:
+            ## Add the user
+            ##os.system(usr_cmd_str)
+            print 'Executing following command:....'
+            print usr_cmd_str
+            print 'Executing following command:....'
+            print pwd_cmd_str
+            try:
+                subprocess.call(usr_cmd_str, shell=True)
+            except OSError:
+                print 'OS ERROR!! while creating user'
+                createUser = False
+            ## Change the password
+            try:
+                subprocess.call(pwd_cmd_str, shell=True)
+            except OSError:
+                print 'OS ERROR!! while changing Password'
+                changePwd = False
+        
+        return pwd, createUser, changePwd
+        
+    
+def create_batch_users(csvFile, testArgs=True, checkUsers=True):
+    """
+    Create a batch of users from the csvFile
+    """
+    user_list = read_user_csv(csvFile, skipRows=5)
+    ## DEFAULT SHELL FOR ALL USERS
+    shell = "/bin/csh"
+   
+    for user in user_list:
+        skel = user.skeldir
+        username = user.username
+        add_groups = user.groups
+        add_groups = add_groups.replace('/',',')
+        home_dir = user.homedir
+        comment = '"'+user.name+','+user.dept+','+user.descrip+','+user.email+'"'
+        home = home_dir+'/'+username
+        
+        if(testArgs):
+            #print user.email+':'+user.name+':'+username+':'+user.pwd
+            print username+':'+add_groups+':'+comment+':'+home+':'+shell+':'+skel
+        else:
+            user.pwd, createUser, changePwd = create_user(username, add_groups, comment, home, shell, skel, checkUsers)
+
+        if( (not testArgs) and (not checkUsers) and createUser and changePwd ):
+            print 'Sending email to '+user.email+'.....'
+            send_mail(user.email, user.name, username, user.pwd)
+
+def create_google_contact(csvFile):
+    """
+    Create Google contact info in .csv format from Silicon spreadsheet  
+    """
+    user_list = read_user_csv(csvFile, skipRows=5)
+   
+    # Print the header required for Google to recognize the contacts
+    print 'Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,E-mail 1 - Type,E-mail 1 - Value,Phone 1 - Type,Phone 1 - Value,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description,Organization 2 - Type,Organization 2 - Name,Organization 2 - Yomi Name,Organization 2 - Title,Organization 2 - Department,Organization 2 - Symbol,Organization 2 - Location,Organization 2 - Job Description'
+    # 
+    # Now print each user info. NOTE: the format used below is from a exported contact list
+    for user in user_list:
+        contactStr = user.name+',,,,,,,,,,,,,,,,,,,,,,,,,'+user.regd_no+' '+user.username+',,,'+user.descrip+' ::: * myContacts,* Work,'+user.email+',Mobile,'+user.phone+' ::: ,,,,'+user.dept+',,,,,,,,,,,,'
+        print contactStr 
+
+
+def create_moodle_csv(csvFile):
+    """
+    Create Moodle Account info in .csv format from Silicon spreadsheet  
+    """
+    user_list = read_user_csv(csvFile, skipRows=5)
+   
+    # Print the header required for Google to recognize the contacts
+    print 'id,username,email,firstname,lastname,idnumber,institution,department,phone1,phone2,city,url,icq,skype,aim,yahoo,msn,country'
+    # 
+    # Now print each user info. NOTE: the format used below is from a exported contact list
+    for user in user_list:
+        contactStr = user.regd_no+','+user.username+','+user.email+','+user.name+','+user.descrip+','+user.regd_no+',,,,,Bhubaneswar,,,,,,,IN'
+        print contactStr 
+
+
+def create_admin(username, test=True):
+    """
+    """
+    shell = "/bin/csh"
+    skel ='/etc/skel-admin'
+    #groups = 'admin,wheel,users' 
+    init_group = 'admin'
+    add_groups = '"wheel,users"' 
+    email = 'saroj.rout@silicon.ac.in'
+    name = 'Administrator '+username
+    comment = '"'+name+', ECE, Adv VLSI Lab, '+email+'"'
+    home = '/home/NIS/administrator/'+username
+    # Create the user
+    pwd, createUser, changePwd = create_user(username, init_group, add_groups, comment, home, shell, skel, test)
+    if(test):
+        print email+':'+name+':'+username+':'+pwd
+
+    if( (not test) and createUser and changePwd ):
+        try:
+            chmod_str = 'chmod 750 '+home
+            subprocess.call(chmod_str , shell=True)
+        except OSError:
+            print 'OS ERROR!! while '+chmod_str
+            print 'Change the group ownership of home dir manually'
+
+        print 'Sending email to '+email+'.....'
+        send_mail(email, name, username, pwd)
+    
+     
+def create_single_user(test=True):
+    """
+    """
+    username = 'svn'
+    init_group = 'users'
+    add_groups = 'users'
+    home_dir = '/HOME'
+    comment = '"'+username+',SYS,Adv VLSI Lab,saroj.rout@silicon.ac.in"'
+    home = home_dir+'/'+username
+    shell = "/bin/csh"
+    skel = '/etc/skel-admin'
+    create_user(username, init_group, add_groups, comment, home, shell, skel, test)
+
+
+def main(argv):
+    usageStr = '''buser -htcmgd -i <input file> [-e <email>]
+        -h  help
+        -t  test
+        -c  create linux users
+        -m  create moodle database
+        -g  create google contact 
+        -d  delete accounts
+        -i  input file in .csv format
+        -e  email (needs -t)
+    '''
+    iFile = ''
+    eMail = ''
+    iArg = False 
+    eArg = False 
+    hArg = False
+    tArg = False
+    cArg = False
+    mArg = False
+    gArg = False
+    dArg = False
+    #
+    try:
+        opts, args = getopt.getopt(argv[1:], "htcmgdi:e:")
+    except getopt.GetoptError:
+        print usageStr 
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == '-h':
+          hArg = True 
+        elif opt == '-t':
+          tArg = True 
+        elif opt == '-c':
+          cArg = True 
+        elif opt == '-m':
+          mArg = True 
+        elif opt == '-g':
+          gArg = True 
+        elif opt == '-d':
+          dArg = True 
+        elif opt == '-i':
+          iArg = True 
+          iFile = arg
+        elif opt == '-e':
+          eArg = True 
+          eMail = arg
+        else:   
+           print usageStr 
+
+    if hArg:
+        print usageStr
+        sys.exit(2)
+    elif (tArg and eArg):
+        print 'Testing email:',eMail
+	send_mail(eMail, 'Test Mail', 'test', 'test123')
+        sys.exit(2)
+    elif (not iArg):
+	print ""
+        print "ERROR: need input file"
+	print "----------------------"
+        print usageStr
+        sys.exit(2)
+    elif tArg:
+        print 'Testing file',iFile
+  	checkUsers = True
+  	testArgs = True
+  	create_batch_users(iFile, testArgs, checkUsers)
+        sys.exit(2)
+    elif cArg:
+        print 'Creating users file',iFile
+  	checkUsers = False
+  	testArgs = False
+	create_batch_users(iFile, testArgs, checkUsers)
+        sys.exit(2)
+    elif mArg:
+        print 'Creating moodle file',iFile
+ 	create_moodle_csv(iFile)
+        sys.exit(2)
+    elif gArg:
+        print 'Creating google contacts',iFile
+	create_google_contact(iFile)
+        sys.exit(2)
+    elif dArg:
+        print 'deleting users',iFile
+        del_batch_users(iFile, False)
+        sys.exit(2)
+
+
+
+if __name__ == "__main__":
+  main(sys.argv)
+  #csvFile = '../users/2020-0302-permanent-users.csv'
+  #checkUsers = True
+  #testArgs = True
+  #create_moodle_csv(csvFile)
+  #create_google_contact(csvFile)
+  #create_batch_users(csvFile, testArgs, checkUsers)
+  #create_single_user(testArgs)
+  #create_admin('admin2', testScript)
+  #create_admin('admin2')
+  #del_batch_users(csvFile, testArgs)
+  ## Update the NIS`
+  #if(not(testArgs) and not(checkUsers)):
+  #    os.system('make -C /var/yp')
+
+  #send_mail('sroutk@gmail.com', 'S ROut', 'srout', 'pwd')
+  
+  #if(check_users_exist(csvFile)): 
+  #    print "Users exist"
+  #else:
+   #   print "Users don't exist"
+
+   
+  #print pwd_gen()
+  #read_user_csv(csvFile, skipRows=5)
