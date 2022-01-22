@@ -168,7 +168,7 @@ def check_user_exist(username):
     except KeyError:
         return False
 
-def create_user(username, add_groups, comment, home, shell, skel, test=True):
+def create_user(username, add_groups, comment, home_dir, shell, skel, quotaM, test=True, xfsQuota=False):
     """
     """
     createUser = True
@@ -177,9 +177,15 @@ def create_user(username, add_groups, comment, home, shell, skel, test=True):
         ## Useradd options:
         ## -m : create home
         ## -G : additional groups (NOTE: no whitespace between commas.)
-        usr_cmd_str = "/usr/sbin/useradd -s "+shell +" -d "+home+" -G "+add_groups+" -c "+comment+" -k "+skel+" -m "+ username
+        grpStr=''
+        ##If additional groups given then create -G option
+        if(add_groups):
+             grpStr='-G '+add_groups
+
+        usr_cmd_str = "/usr/sbin/useradd -s "+shell +" -d "+home_dir+"/"+username+" "+grpStr+" -c "+comment+" -k "+skel+" -m "+ username
         pwd = pwd_gen()
         pwd_cmd_str = 'echo "'+username+':'+pwd+'" | /usr/sbin/chpasswd'
+        #NOTE the test is unused in case of create_batch_users 
         if(test):
             print usr_cmd_str
             print pwd_cmd_str
@@ -202,10 +208,22 @@ def create_user(username, add_groups, comment, home, shell, skel, test=True):
                 print 'OS ERROR!! while changing Password'
                 changePwd = False
         
+        if(xfsQuota):
+            soft_quota = quotaM
+            hard_quota = str(int(1.1*float(soft_quota)))
+            quota_cmd_str = "xfs_quota -x -c \'limit -u bsoft="+soft_quota+"M bhard="+hard_quota+"M "+username+"\' "+home_dir
+           #print quota_cmd_str
+            try:
+                subprocess.call(quota_cmd_str, shell=True)
+            except OSError:
+                print 'OS ERROR!! while running xfs_quota .....'
+                print quota_cmd_str
+
+
         return pwd, createUser, changePwd
         
     
-def create_batch_users(csvFile, testArgs=True, checkUsers=True):
+def create_batch_users(csvFile, testArgs=True, checkUsers=True, xfsQuota=False):
     """
     Create a batch of users from the csvFile
     """
@@ -216,7 +234,12 @@ def create_batch_users(csvFile, testArgs=True, checkUsers=True):
     for user in user_list:
         skel = user.skeldir
         username = user.username
+        quotaM = user.quota
         add_groups = user.groups
+        # strip any whitespaces
+        add_groups = "".join(add_groups.split())
+        # Since the file is CSV format, comma cannot be used as a seprator
+        # so / used in the googleSheet which is replaced here with comma.
         add_groups = add_groups.replace('/',',')
         home_dir = user.homedir
         comment = '"'+user.name+','+user.dept+','+user.descrip+','+user.email+'"'
@@ -224,13 +247,13 @@ def create_batch_users(csvFile, testArgs=True, checkUsers=True):
         
         if(testArgs):
             #print user.email+':'+user.name+':'+username+':'+user.pwd
-            print username+':'+add_groups+':'+comment+':'+home+':'+shell+':'+skel
+            print username+':'+add_groups+':'+comment+':'+home+':'+shell+':'+skel+':'+quotaM
         else:
-            user.pwd, createUser, changePwd = create_user(username, add_groups, comment, home, shell, skel, checkUsers)
+            user.pwd, createUser, changePwd = create_user(username, add_groups, comment, home_dir, shell, skel, quotaM, checkUsers, xfsQuota)
 
         if( (not testArgs) and (not checkUsers) and createUser and changePwd ):
             print 'Sending email to '+user.email+'.....'
-            send_mail(user.email, user.name, username, user.pwd)
+            #send_mail(user.email, user.name, username, user.pwd)
 
 def create_google_contact(csvFile):
     """
@@ -262,7 +285,7 @@ def create_moodle_csv(csvFile):
         print contactStr 
 
 
-def create_admin(username, test=True):
+def create_admin(username, test=True, xfsQuota=False):
     """
     """
     shell = "/bin/csh"
@@ -273,9 +296,11 @@ def create_admin(username, test=True):
     email = 'saroj.rout@silicon.ac.in'
     name = 'Administrator '+username
     comment = '"'+name+', ECE, Adv VLSI Lab, '+email+'"'
-    home = '/home/NIS/administrator/'+username
+    #home = '/home/NIS/administrator/'+username
+    home_dir = '/home/NIS/administrator/'
+    quotaM = '100'
     # Create the user
-    pwd, createUser, changePwd = create_user(username, init_group, add_groups, comment, home, shell, skel, test)
+    pwd, createUser, changePwd = create_user(username, init_group, add_groups, comment, home_dir, shell, skel, quotaM, test, xfsQuota)
     if(test):
         print email+':'+name+':'+username+':'+pwd
 
@@ -291,7 +316,7 @@ def create_admin(username, test=True):
         send_mail(email, name, username, pwd)
     
      
-def create_single_user(test=True):
+def create_single_user(test=True, xfsQuota=False):
     """
     """
     username = 'svn'
@@ -302,7 +327,8 @@ def create_single_user(test=True):
     home = home_dir+'/'+username
     shell = "/bin/csh"
     skel = '/etc/skel-admin'
-    create_user(username, init_group, add_groups, comment, home, shell, skel, test)
+    quotaM = '200'
+    create_user(username, init_group, add_groups, comment, home_dir, shell, skel, quotaM, test, xfsQuota)
 
 
 def main(argv):
@@ -314,6 +340,7 @@ def main(argv):
         -g  create google contact 
         -d  delete accounts
         -i  input file in .csv format
+        -q  to enable xfs quota
         -e  email (needs -t)
     '''
     iFile = ''
@@ -326,9 +353,10 @@ def main(argv):
     mArg = False
     gArg = False
     dArg = False
+    qArg = False
     #
     try:
-        opts, args = getopt.getopt(argv[1:], "htcmgdi:e:")
+        opts, args = getopt.getopt(argv[1:], "htcmgdqi:e:")
     except getopt.GetoptError:
         print usageStr 
         sys.exit(2)
@@ -346,6 +374,9 @@ def main(argv):
           gArg = True 
         elif opt == '-d':
           dArg = True 
+        elif opt == '-q':
+          qArg = True 
+          print "Quota enabled"
         elif opt == '-i':
           iArg = True 
           iFile = arg
@@ -378,7 +409,7 @@ def main(argv):
         print 'Creating users file',iFile
   	checkUsers = False
   	testArgs = False
-	create_batch_users(iFile, testArgs, checkUsers)
+	create_batch_users(iFile, testArgs, checkUsers, qArg)
         sys.exit(2)
     elif mArg:
         print 'Creating moodle file',iFile
