@@ -253,7 +253,7 @@ def create_batch_users(csvFile, testArgs=True, checkUsers=True, xfsQuota=False):
 
         if( (not testArgs) and (not checkUsers) and createUser and changePwd ):
             print 'Sending email to '+user.email+'.....'
-            #send_mail(user.email, user.name, username, user.pwd)
+            send_mail(user.email, user.name, username, user.pwd)
 
 def create_google_contact(csvFile):
     """

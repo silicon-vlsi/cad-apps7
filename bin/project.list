@@ -1,0 +1,7 @@
+// List of valid projects that can be created by the script xproj
+// Project Name format: <TECHNOLOGY>-<YEAR>
+// REVISION: T0 : Training
+// File Format:
+// ProjectName	Revision	Technology	Module	Environmment Module			alias 		Fab	EDA	Comment
+//-------------------------------------------------------------------------------------------------------------------------------------------
+VOLTA		REV1		xc06m3		0	project/cad-xfab/volta			volta		xfab	ic616	0.6um/3M/CMOS-TapedOut(TO)

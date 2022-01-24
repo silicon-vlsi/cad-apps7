@@ -15,7 +15,7 @@ DESCRIPTION: Creates project area, if it doesn't exist, from a list
              in /home/NIS/projects/<PROJNAME>/<REV>/work/<USER>
 
 USAGE:   $0 [OPTIONS]    # creates project area
-         -p   # project list file name. default proj-sit.list
+         -p   # project list file name. default training.list
                 NOTE: The file should exist in /CAD/apps7/bin  
 	 -e   # prints the environment module (and the alias) required for the project. 
 	 -m   # Creates a master project area instead for <USER>
@@ -27,8 +27,8 @@ USAGE:   $0 [OPTIONS]    # creates project area
          -h   # This help 
 
 NOTE:
-	Before running the script, mkdir /home/NIS/projects/<PROJNAME>/<REV>/work and 
-	change owner/group to srout/users and chmod 775 work
+	Before running the script, mkdir /home/nfs1/projects/<PROJNAME>/<REV>/work and 
+	change owner/group to chmod 775 work
         PROJNAME and REV should be in uppercase although it maybe lower in proj.list
 HELP
 
@@ -44,7 +44,7 @@ my $qtech;	# Queries the technology of the user project.
 my $local;
 my $envOpt;
 my $apps7path="/CAD/apps7/bin";
-my $projlist="proj-sit.list";	#Default
+my $projlist="training.list";	#Default
 my $cadence=0;
 my $tanner=0;
 
