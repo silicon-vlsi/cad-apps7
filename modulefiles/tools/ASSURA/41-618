@@ -1,0 +1,29 @@
+#%Module1.0#####################################################################
+##
+## null modulefile
+##
+## modulefiles/null.  Generated from null.in by configure.
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up ASSURA Environment."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis	"Sets up the Cadence Environment"
+
+# for Tcl script use only
+# ASSURA-4.1 for IC618
+set     version      "41-618"
+
+conflict ASSURA 
+
+
+set base_dir /CAD/cadence/ASSURA41-618
+
+setenv ASSURAHOME 	$base_dir
+
+prepend-path PATH            $base_dir/bin:$base_dir/tools.lnx86/bin:$base_dir/tools.lnx86/dfII/bin:$base_dir/tools/bin:$base_dir/tools/dfII/bin:$base_dir/share/bin
+
+#append-path  MANPATH         $base_dir/data/share/tempus/man

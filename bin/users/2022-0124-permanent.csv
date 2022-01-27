@@ -1,0 +1,8 @@
+"Silicon Institute of Technology, Bhubaneswar",,,,,,,,,,,
+"Foundation of VLSI, Summer Internship ",,,,,,,,,,,
+Jan 2022,,,,,,,,,,,
+,,,,,,,,,,,
+Sl,IDNo,Name,Dept,Phone,email,username,homeDir,skelDir,quotaM,groups,description
+1,FES17073,Saroj Rout,EEE,9090752283,saroj.rout@silicon.ac.in,srout,/home/nfs1,/etc/skel,6000,,Faculty
+2,XC06M3,Volta XC06,VLSI,7776669999,vlsi@silicon.ac.in,pvolta,/home/nfs1,/etc/skel,1000,,Project Volta
+3,Lab1,VLSI Lab1,VLSI,8887779999,vlsi@silicon.ac.in,vlab1,/home/nfs2,/etc/skel,500,,Trainin Lab1

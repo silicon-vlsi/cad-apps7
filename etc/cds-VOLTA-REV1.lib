@@ -1,0 +1,19 @@
+# ------------------------------------------------------------------------------
+# All Tapeout Libraries that need to be shared project-wide for XC06M3-18-A0
+# are assigned here under the specific Combine/Diplay Name XC06M3 
+# ------------------------------------------------------------------------------
+DEFINE	XC06M3Libs      /home/nfs1/projects/VOLTA/REV1/work/pvolta/XC06M3Libs
+ASSIGN	XC06M3Libs      DISPLAY	        XC06M3_top
+ASSIGN  XC06M3Libs      COMBINE         XC06M3_18_A0 XC06M3_18_A0_SIM
+# -- Add all the project related Libraries here and COMBINE them
+DEFINE  XC06M3_18_A0    /home/nfs1/projects/VOLTA/REV1/work/pvolta/XC06M3_18_A0
+ASSIGN  XC06M3_18_A0    DISPLAY         XC06M3Libs
+DEFINE  XC06M3_18_A0_SIM    /home/nfs1/projects/VOLTA/REV1/work/pvolta/XC06M3_18_A0_SIM
+ASSIGN  XC06M3_18_A0_SIM    DISPLAY         XC06M3Libs
+
+# ------------------------------------------------------------------------------
+# All User Libraries that need to be shared project-wide for XC06M3-18-A0
+# are assigned here under the specific Combine/Diplay Name XC06M3 
+# ------------------------------------------------------------------------------
+DEFINE  Verilog-A       /CAD/cadence/IC618/tools/dfII/samples/artist/spectreHDL/Verilog-A
+DEFINE  bmslib          /CAD/cadence/IC618/tools/dfII/samples/artist/bmslib
