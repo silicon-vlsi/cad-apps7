@@ -28,7 +28,7 @@ if (! -d /home/local) then
 endif
 
 ## Alias's
-#alias xc06	'module load project/cad-xfab/xc06m3-18-a0-1.0'
+alias volta	'module load projects/volta-rev1'
 #alias xt18	'module load project/cad-xfab/xt018-19-a0'
 #alias xh18	'module load project/cad-xfab/xh018-20-a0'
 #alias fman2	'module load project/cad-xfab/feynman-rev2'

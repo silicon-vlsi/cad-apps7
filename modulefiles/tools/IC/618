@@ -22,7 +22,9 @@ conflict IC
 #Set the license file server
 # $CDSLICPORT is set in the globla csh file /etc/profile.d/silicon.csh
 #IP address of cdslicsrv is set in /etc/hosts
-set license_file            $env(CDSLICPORT)@cdslicsrv
+# NOTE: Although /etc/hosts also has the IP assigned to cdslicsrv
+#       FlexLM is unable to access the server. Not sure why
+set license_file            $env(CDSLICPORT)@cdslicsrv.vlsi.silicon.ac.in
 setenv LM_LICENSE_FILE $license_file
 setenv CDS_LIC_FILE    $license_file
 
