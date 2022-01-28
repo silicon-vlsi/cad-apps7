@@ -29,11 +29,10 @@ endif
 
 ## Alias's
 alias volta	'module load projects/volta-rev1'
-#alias xt18	'module load project/cad-xfab/xt018-19-a0'
+alias tesla-tt	'module load projects/tesla-rev1-tt'
 #alias xh18	'module load project/cad-xfab/xh018-20-a0'
 #alias fman2	'module load project/cad-xfab/feynman-rev2'
 #alias fman2-tt	'module load project/cad-xfab/feynman-rev2-tt18'
 #alias von	'module load project/cad-xfab/neumann-rev1'
 #alias amp	'module load project/cad-tsmc/ampere-rev1'
-#alias tesla-tt	'module load project/cad-xfab/tesla-rev1-tt18'
 #alias tesla	'module load project/cad-xfab/tesla-rev1'

@@ -226,7 +226,7 @@ my $proj_path = $PROJ_DIR.'/'.$projname.'/'.$rev;
 #  work/<EDA>-<USER> format OR work/<USER>
 my $proj_path_userWA;
 if($tanner){ 
-	$proj_path_userWA = $proj_path.'/work/'.$eda.'-'.$USERNAME;
+	$proj_path_userWA = $proj_path.'/work/tt-'.$USERNAME;
 }
 else {
 	$proj_path_userWA = $proj_path.'/work/'.$USERNAME;
@@ -400,6 +400,7 @@ sub createWA{
     	      print "*** SVN repo IS NOT checked out!! **";
               print "*** If you need the svn repo, manually checkout in the project area:";
     	      print "svn checkout svn+ssh://svn@54.254.226.43/home/svn/repos/feynman_svn";
+              print "*** ";
 
             }
             else{

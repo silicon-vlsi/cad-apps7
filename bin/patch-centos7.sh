@@ -81,7 +81,7 @@ echo "*************************************"
 pckarr=( \
   environment-modules tree tigervnc-server subversion numpy \
   python-matplotlib tcl tk \ 
-  glibc elfutils-libelf ksh mesa-libGL mesa-libGLU \
+  glibc glibc.i686 elfutils-libelf ksh mesa-libGL mesa-libGLU \
   motif libXp libpng libjpeg-turbo expat glibc-devel \
   gdb xorg-x11-fonts-misc xorg-x11-fonts-ISO8859-1-75dpi \
   redhat-lsb libXScrnSaver apr apr-util compat-db47 \
