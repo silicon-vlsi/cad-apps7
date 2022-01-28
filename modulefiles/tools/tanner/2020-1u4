@@ -1,0 +1,37 @@
+#%Module1.0#####################################################################
+##
+## Environment variables for Mentor's Tanner setup 
+##
+##  Created with data from tanner_install.pdf 
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up Mentor's Tanner Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis   "Sets up the Mentor's Tanner Environment"
+
+# for Tcl script use only
+set     version      "2020-1u4"
+
+conflict tanner 
+
+#
+#License File Stuff (This is also loaded in the AMS env)
+#MGCLICPORT is set in /CAD/apps/etc/silicon.csh (linked to /etc/profile.d)
+#IP address of LICENSE-SRV is set in /etc/hosts
+#setenv LM_LICENSE_FILE $env(MGCLICPORT)@mgclicsrv.vlsi.silicon.ac.in
+# New install.pdf says the following env variable
+setenv MGLS_LICENSE_FILE $env(MGCLICPORT)@mgclicsrv.vlsi.silicon.ac.in
+#
+#setenv TANNERWINEPREFIX /home/local/simulation/$env(USER)/.wine-2020-1-u4
+#
+setenv TANNER_PATH /CAD/mentor/tannereda/tanner-2020-1-rhel6-64
+
+## Set the Paths
+prepend-path PATH   $env(TANNER_PATH)/bin
+
+## Aliases
+#

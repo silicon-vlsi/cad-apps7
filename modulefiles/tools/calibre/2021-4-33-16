@@ -1,0 +1,33 @@
+#%Module1.0#####################################################################
+##
+## Environment variables for Mentor's Calibre setup 
+##
+##  Created with data from calibre_admin_gd.pdf 
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up Mentor's Calibre Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis   "Sets up the Mentor's Calibre Environment"
+
+# for Tcl script use only
+set     version      "2021-4-33-16"
+
+conflict calibre 
+
+#
+#License File Stuff (This is also loaded in the AMS env)
+#MGCLICPORT is set in /CAD/apps/etc/silicon.csh (linked to /etc/profile.d)
+#IP address of mgclicserv.vlsi.silicon.ac.in is set in /etc/hosts
+setenv LM_LICENSE_FILE $env(MGCLICPORT)@mgclicserv.vlsi.silicon.ac.in
+#
+setenv CALIBRE_HOME /CAD/mentor/calibre/2021-4-33-16/aoi_cal_2021.4_33.16 
+
+## Set the Paths
+prepend-path PATH   $env(CALIBRE_HOME)/bin
+
+## Aliases
+#
