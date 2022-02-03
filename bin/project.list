@@ -2,7 +2,10 @@
 // Project Name format: <TECHNOLOGY>-<YEAR>
 // REVISION: T0 : Training
 // File Format:
-// ProjectName	Revision	Technology	Module	Environmment Module	alias 		Fab	EDA	Comment
+// ProjectName	Revision	Technology	Module	Environmment Module		alias 		Fab	EDA	Comment
 //-------------------------------------------------------------------------------------------------------------------------------------------
-VOLTA		REV1		xc06m3		0	project/volta		volta		xfab	ic618	0.6um/3M/CMOS-TapedOut(TO)
-TESLA		REV1		xdh10		2	project/tesla-tt	tesla-tt	xfab	tt20	1um-650V-BCD
+VOLTA		REV1		xc06m3		0	project/volta-rev1		volta		xfab	ic618	0.6um/3M/CMOS-TapedOut(TO)
+FEYNMAN		REV1		xt018		1243	project/feynman-rev1		fman		xfab	ic618	0.18um-SOI/Feynman-rev1/TO
+FEYNMAN		REV1		xt018		1243	project/feynman-rev1-tt		fman-tt		xfab	tt20	0.18um-SOI/Feynman-rev1/TO
+AMPERE		REV1		t28hpc		0	project/ampere-rev1		amp		tsmc	ic618	28nm/CMOS/HPC+RF/Innatera
+TESLA		REV1		xdh10		2	project/tesla-rev1-tt		tesla-tt	xfab	tt20	1um-650V-BCD

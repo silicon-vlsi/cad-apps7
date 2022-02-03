@@ -22,7 +22,7 @@ conflict calibre
 #License File Stuff (This is also loaded in the AMS env)
 #MGCLICPORT is set in /CAD/apps/etc/silicon.csh (linked to /etc/profile.d)
 #IP address of mgclicserv.vlsi.silicon.ac.in is set in /etc/hosts
-setenv LM_LICENSE_FILE $env(MGCLICPORT)@mgclicserv.vlsi.silicon.ac.in
+setenv LM_LICENSE_FILE $env(MGCLICPORT)@mgclicsrv.vlsi.silicon.ac.in
 #
 #setenv CALIBRE_HOME /CAD/mentor/calibre/2018-4-34-26/aoi_cal_2018.4_34.26
 setenv CALIBRE_HOME /CAD/mentor/calibre/2020-2-14-12/aoi_cal_2020.2_14.12 

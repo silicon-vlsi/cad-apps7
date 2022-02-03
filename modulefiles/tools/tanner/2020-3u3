@@ -26,8 +26,8 @@ conflict tanner
 # New install.pdf says the following env variable
 setenv MGLS_LICENSE_FILE $env(MGCLICPORT)@mgclicsrv.vlsi.silicon.ac.in
 #
-# set the following in silicon.csh
-#setenv TANNERWINEPREFIX /home/local/simulation/$env(USER)/.wine-2020-1-u4
+# Got this from Tanner Installation inst from supprt.siemens 
+setenv TANNERWINEPREFIX /home/local/simulation/$env(USER)/.wine-2020-3u3
 #
 setenv TANNER_PATH /CAD/mentor/tannereda/tanner-2020-3u3/tanner
 

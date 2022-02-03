@@ -331,13 +331,38 @@ def create_single_user(test=True, xfsQuota=False):
     create_user(username, init_group, add_groups, comment, home_dir, shell, skel, quotaM, test, xfsQuota)
 
 
+def update_groups(csvFile, testArgs=False):
+    """
+    Append groups for users 
+    """
+    user_list = read_user_csv(csvFile, skipRows=5)
+   
+    for user in user_list:
+        username = user.username
+        add_groups = user.groups
+        # strip any whitespaces
+        add_groups = "".join(add_groups.split())
+        # Since the file is CSV format, comma cannot be used as a seprator
+        # so / used in the googleSheet which is replaced here with comma.
+        add_groups = add_groups.replace('/',',')
+        print 'Updating groups for '+username+' with groups '+add_groups
+        group_cmd = 'usermod -aG '+add_groups+' '+username
+        if(testArgs):
+            print group_cmd
+        else:
+            #os.system(del_cmd)
+            try:
+                subprocess.call(group_cmd, shell=True)
+            except OSError:
+                print 'OS ERROR!! while updating user '+username
+        
+
 def main(argv):
-    usageStr = '''buser -htcmgd -i <input file> [-e <email>]
+    usageStr = '''buser -htcgqd -i <input file> [-e <email>]
         -h  help
         -t  test
         -c  create linux users
-        -m  create moodle database
-        -g  create google contact 
+        -g  update groups 
         -d  delete accounts
         -i  input file in .csv format
         -q  to enable xfs quota
@@ -350,13 +375,12 @@ def main(argv):
     hArg = False
     tArg = False
     cArg = False
-    mArg = False
     gArg = False
     dArg = False
     qArg = False
     #
     try:
-        opts, args = getopt.getopt(argv[1:], "htcmgdqi:e:")
+        opts, args = getopt.getopt(argv[1:], "htcgdqi:e:")
     except getopt.GetoptError:
         print usageStr 
         sys.exit(2)
@@ -368,15 +392,12 @@ def main(argv):
           tArg = True 
         elif opt == '-c':
           cArg = True 
-        elif opt == '-m':
-          mArg = True 
         elif opt == '-g':
           gArg = True 
         elif opt == '-d':
           dArg = True 
         elif opt == '-q':
           qArg = True 
-          print "Quota enabled"
         elif opt == '-i':
           iArg = True 
           iFile = arg
@@ -411,13 +432,9 @@ def main(argv):
   	testArgs = False
 	create_batch_users(iFile, testArgs, checkUsers, qArg)
         sys.exit(2)
-    elif mArg:
-        print 'Creating moodle file',iFile
- 	create_moodle_csv(iFile)
-        sys.exit(2)
     elif gArg:
-        print 'Creating google contacts',iFile
-	create_google_contact(iFile)
+        print 'Updating extended groups',iFile
+	update_groups(iFile, False)
         sys.exit(2)
     elif dArg:
         print 'deleting users',iFile
