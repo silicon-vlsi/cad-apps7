@@ -1,0 +1,7 @@
+"Silicon Institute of Technology, Bhubaneswar",,,,,,,,,,,
+"Foundation of VLSI, Summer Internship ",,,,,,,,,,,
+Jan 2022,,,,,,,,,,,
+,,,,,,,,,,,
+Sl,IDNo,Name,Dept,Phone,email,username,homeDir,skelDir,quotaM,groups,description
+1,XFAB180,Project Feynman ,VLSI,7776669999,vlsi@silicon.ac.in,pfeynman,/home/nfs1,/etc/skel,1000,localsim,Project Feynman
+2,TSMC28nm,Project Ampere ,VLSI,7776669999,vlsi@silicon.ac.in,pampere,/home/nfs1,/etc/skel,1000,localsim,Project Ampere
