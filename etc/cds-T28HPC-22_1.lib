@@ -1,0 +1,21 @@
+# ------------------------------------------------------------------------------
+# TSMC 28nm HPC+ RF  
+# ------------------------------------------------------------------------------
+INCLUDE /PDK/TSMC/28HPC-PLUS-RF/PDK/TSMC-iPDK/cds.lib
+#
+DEFINE  bmslib          $CDSHOME/tools/dfII/samples/artist/bmslib
+#
+#Combine Libs into relevant categories
+ASSIGN basic            DISPLAY         Cadence_lib
+ASSIGN analogLib        DISPLAY         Cadence_lib
+ASSIGN bmslib           DISPLAY         Cadence_lib
+ASSIGN cdsDefTechLib    DISPLAY         Cadence_lib
+DEFINE CadenceLibs                      /CAD/apps7/etc/dummyLibs/CadenceLibs
+ASSIGN CadenceLibs      DISPLAY         Cadence_top
+ASSIGN CadenceLibs      COMBINE         cdsDefTechLib bmslib analogLib basic
+#
+ASSIGN tsmcN28          DISPLAY         Tech_lib
+ASSIGN avTech           DISPLAY         Tech_lib
+DEFINE TechLibs                         /CAD/apps7/etc/dummyLibs/TechLibs
+ASSIGN TechLibs         DISPLAY         Tech_top
+ASSIGN TechLibs         COMBINE         tsmcN28 avTech 
