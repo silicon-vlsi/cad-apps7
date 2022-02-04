@@ -25,7 +25,7 @@ if [ -f /etc/profile.d/silicon.csh ];
     echo "/etc/profile.d/silicon.csh  EXISTS, check if it's the right one."
     echo ""
   else
-    ln -s /CAD/apps/etc/silicon.csh /etc/profile.d/silicon.csh 
+    ln -s /CAD/apps7/etc/silicon.csh /etc/profile.d/silicon.csh 
     echo "silicon.csh linked.."
     echo ""
 fi
@@ -42,7 +42,7 @@ if [ -d /home/local ];
  else
    mkdir /home/local
    chmod 775 /home/local
-   chgrp users /home/local
+   chgrp l /home/local
    echo "/home/local created with the req perms."
    echo ""
 fi
@@ -80,7 +80,7 @@ echo "CHECKING INSTALLED PACKAGES"
 echo "*************************************"
 pckarr=( \
   environment-modules tree tigervnc-server subversion numpy \
-  python-matplotlib tcl tk \ 
+  python-matplotlib tcl tk ypbind rpcbind\ 
   glibc glibc.i686 elfutils-libelf ksh mesa-libGL mesa-libGLU \
   motif libXp libpng libjpeg-turbo expat glibc-devel \
   gdb xorg-x11-fonts-misc xorg-x11-fonts-ISO8859-1-75dpi \

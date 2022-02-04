@@ -27,14 +27,11 @@ if (! -d /home/local) then
    echo "Use the script /CAD/apps7/bin/create-local"
 endif
 
-## Alias's
+## Project Alias's
 alias volta	'module load projects/volta-rev1'
 alias tesla-tt	'module load projects/tesla-rev1-tt'
 alias amp	'module load projects/ampere-rev1'
 alias fman	'module load projects/feynman-rev1'
 alias fman-tt	'module load projects/feynman-rev1-tt'
-#alias xh18	'module load project/cad-xfab/xh018-20-a0'
-#alias fman2	'module load project/cad-xfab/feynman-rev2'
-#alias fman2-tt	'module load project/cad-xfab/feynman-rev2-tt18'
-#alias von	'module load project/cad-xfab/neumann-rev1'
-#alias tesla	'module load project/cad-xfab/tesla-rev1'
+##Training Aliases
+alias t28-22-1	'module load trainings/t28hpc-22-1'

@@ -66,6 +66,7 @@ my @projEnv;
 my @projAlias;
 my @projFab;
 my @projEDA;
+my @projDir;
 my %projInfo = ();
 my $ind=0;
 my $xkitStr;
@@ -83,7 +84,7 @@ while (<INFILE>) {
 		next;
 	}
 	else {
-		($projTitle[$ind], $projRev[$ind], $projTech[$ind], $projMod[$ind], $projEnv[$ind], $projAlias[$ind], $projFab[$ind], $projEDA[$ind], @{$projInfo{$ind}}) = split;
+		($projTitle[$ind], $projRev[$ind], $projTech[$ind], $projMod[$ind], $projEnv[$ind], $projAlias[$ind], $projFab[$ind], $projEDA[$ind], $projDir[$ind],  @{$projInfo{$ind}}) = split;
 		#print "$ind : $projTitle[$ind]/$projRev[$ind]\t$projTech[$ind]\t$projMod[$ind]\t@{$projInfo{$ind}}\n";	
 		$ind++;
 	}
@@ -125,6 +126,7 @@ my $env = $projEnv[$PROJINP-1];
 my $alias = $projAlias[$PROJINP-1];
 my $fab = $projFab[$PROJINP-1]; 
 my $eda = $projEDA[$PROJINP-1];
+my $dir = $projDir[$PROJINP-1];
 ## Name the svn repo in this format PROJNAME_REV_svn
 my $svnrepo = $projname.'_'.$rev.'_svn';
 
@@ -141,7 +143,8 @@ if( ($eda eq "ic616") or ($eda eq "ic618")){
 ### -----------------------------------------------------------
 ## Setting up the Environment variables
 ### -----------------------------------------------------------
-my $PROJ_DIR = $ENV{'SIPROJ_DIR'};
+#my $PROJ_DIR = $ENV{'SIPROJ_DIR'};
+my $PROJ_DIR = $dir; 
 my $PWD = $ENV{'PWD'};
 my $USERNAME = $ENV{'USER'};
 my @TMP_ARGV;
@@ -187,9 +190,9 @@ if($tanner){
 
 #Check if SIPROJ_DIR exists
 unless( -e $PROJ_DIR and -d $PROJ_DIR){
-    printf("ERROR: SIPROJ_DIR environment variable is not defined\n");
-    printf("       Please define it eg. setenv SIPROJ_DIR .....\n");
-    printf("       preferably in /etc/profile.d/silicon.csh  ....\n");
+    printf("ERROR: Project Driectory $PROJ_DIR does not exist\n");
+    #printf("       Please define it eg. setenv SIPROJ_DIR .....\n");
+    #printf("       preferably in /etc/profile.d/silicon.csh  ....\n");
 }
 
 #
