@@ -13,7 +13,7 @@ list("metric" (prependInstallPath "samples/symbolGen/metric.tsg"))
  
 ;;
 ; Set the project directory to the local directory
-envSetVal("asimenv.startup" "projectDir" 'string strcat("/home/local/" getShellEnvVar("USER") "/simulation"))
+envSetVal("asimenv.startup" "projectDir" 'string strcat("/home/local/simulation/" getShellEnvVar("USER") ))
 
 ; Set Spectre as the default simulator
 envSetVal("asimenv.startup" "simulator" 'string "spectre")
