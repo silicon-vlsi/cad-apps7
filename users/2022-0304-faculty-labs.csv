@@ -1,0 +1,41 @@
+"Silicon Institute of Technology, Bhubaneswar",,,,,,,,,,,
+"Foundation of VLSI, Summer Internship ",,,,,,,,,,,
+Jan 2022,,,,,,,,,,,
+,,,,,,,,,,,
+Sl,IDNo,Name,Dept,Phone,email,username,homeDir,skelDir,quotaM,groups,description
+2,FES100000,Santunu Sarangi,IEI,9348214035,santunu.sarangi@silicon.ac.in,ssarangi,/home/nfs1,/etc/skel,6000,localsim/pvolta/ptesla/pampere/ptraining,Faculty
+3,FES100001,Prasant Swain,ECE,9583400570,prasant.swain@silicon.ac.in,pswain,/home/nfs1,/etc/skel,1000,localsim/pvolta/ptesla/pampere/ptraining,Faculty
+7,Lab2,VLSI Lab2,VLSI,8887779999,vlsi@silicon.ac.in,vlab2,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab2
+7,Lab3,VLSI Lab3,VLSI,8887779999,vlsi@silicon.ac.in,vlab3,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab3
+7,Lab4,VLSI Lab4,VLSI,8887779999,vlsi@silicon.ac.in,vlab4,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab4
+7,Lab5,VLSI Lab5,VLSI,8887779999,vlsi@silicon.ac.in,vlab5,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab5
+7,Lab6,VLSI Lab6,VLSI,8887779999,vlsi@silicon.ac.in,vlab6,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab6
+7,Lab7,VLSI Lab7,VLSI,8887779999,vlsi@silicon.ac.in,vlab7,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab7
+7,Lab8,VLSI Lab8,VLSI,8887779999,vlsi@silicon.ac.in,vlab8,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab8
+7,Lab9,VLSI Lab9,VLSI,8887779999,vlsi@silicon.ac.in,vlab9,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab9
+7,Lab10,VLSI Lab10,VLSI,8887779999,vlsi@silicon.ac.in,vlab10,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab10
+7,Lab11,VLSI Lab11,VLSI,8887779999,vlsi@silicon.ac.in,vlab11,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab11
+7,Lab12,VLSI Lab12,VLSI,8887779999,vlsi@silicon.ac.in,vlab12,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab12
+7,Lab13,VLSI Lab13,VLSI,8887779999,vlsi@silicon.ac.in,vlab13,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab13
+7,Lab14,VLSI Lab14,VLSI,8887779999,vlsi@silicon.ac.in,vlab14,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab14
+7,Lab15,VLSI Lab15,VLSI,8887779999,vlsi@silicon.ac.in,vlab15,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab15
+7,Lab16,VLSI Lab16,VLSI,8887779999,vlsi@silicon.ac.in,vlab16,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab16
+7,Lab17,VLSI Lab17,VLSI,8887779999,vlsi@silicon.ac.in,vlab17,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab17
+7,Lab18,VLSI Lab18,VLSI,8887779999,vlsi@silicon.ac.in,vlab18,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab18
+7,Lab19,VLSI Lab19,VLSI,8887779999,vlsi@silicon.ac.in,vlab19,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab19
+7,Lab20,VLSI Lab20,VLSI,8887779999,vlsi@silicon.ac.in,vlab20,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab20
+7,Lab21,VLSI Lab21,VLSI,8887779999,vlsi@silicon.ac.in,vlab21,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab21
+7,Lab22,VLSI Lab22,VLSI,8887779999,vlsi@silicon.ac.in,vlab22,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab22
+7,Lab23,VLSI Lab23,VLSI,8887779999,vlsi@silicon.ac.in,vlab23,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab23
+7,Lab24,VLSI Lab24,VLSI,8887779999,vlsi@silicon.ac.in,vlab24,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab24
+7,Lab25,VLSI Lab25,VLSI,8887779999,vlsi@silicon.ac.in,vlab25,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab25
+7,Lab26,VLSI Lab26,VLSI,8887779999,vlsi@silicon.ac.in,vlab26,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab26
+7,Lab27,VLSI Lab27,VLSI,8887779999,vlsi@silicon.ac.in,vlab27,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab27
+7,Lab28,VLSI Lab28,VLSI,8887779999,vlsi@silicon.ac.in,vlab28,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab28
+7,Lab29,VLSI Lab29,VLSI,8887779999,vlsi@silicon.ac.in,vlab29,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab29
+7,Lab30,VLSI Lab30,VLSI,8887779999,vlsi@silicon.ac.in,vlab30,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab30
+7,Lab31,VLSI Lab31,VLSI,8887779999,vlsi@silicon.ac.in,vlab31,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab31
+7,Lab32,VLSI Lab32,VLSI,8887779999,vlsi@silicon.ac.in,vlab32,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab32
+7,Lab33,VLSI Lab33,VLSI,8887779999,vlsi@silicon.ac.in,vlab33,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab33
+7,Lab34,VLSI Lab34,VLSI,8887779999,vlsi@silicon.ac.in,vlab34,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab34
+7,Lab35,VLSI Lab35,VLSI,8887779999,vlsi@silicon.ac.in,vlab35,/home/nfs2,/etc/skel,500,localsim/ptraining,Trainin Lab35

@@ -1,0 +1,25 @@
+#%Module1.0#####################################################################
+##
+## null modulefile
+##
+## modulefiles/null.  Generated from null.in by configure.
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up NGSpice Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis	"Sets up the NGSPICE Environment"
+
+# for Tcl script use only
+set     version      "36"
+
+#conflict MMSIM
+
+#
+setenv	SPICE_LIB_DIR /CAD/opensrc/eda-ngspice/centos7x64/share/ngspice
+setenv	SPICE_EXEC_DIR /CAD/opensrc/eda-ngspice/centos7x64/bin
+append-path PATH  $env(SPICE_EXEC_DIR)
+
