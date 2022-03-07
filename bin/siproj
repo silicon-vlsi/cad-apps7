@@ -299,11 +299,11 @@ elsif($update){
         if(not $cdsinitUpdate){
 	  open(CDSINIT, ">>.cdsinit") || die("Could not open .cdsinit");
           print(CDSINIT ";; --------------Load Calibre skill ---------------\n");
-	  print(CDSINIT "loadi(\"/CAD/apps/etc/cdsinit-calibre.il\")\n;;\n");
+	  print(CDSINIT "loadi(\"/CAD/apps7/etc/cdsinit-calibre.il\")\n;;\n");
           close(CDSINIT);
           print("Added | to .cdsinit ...\n");
           print("      v\n");
-	  print("loadi(\"/CAD/apps/etc/cdsinit-calibre.il\")\n\n");
+	  print("loadi(\"/CAD/apps7/etc/cdsinit-calibre.il\")\n\n");
         }
         else{
           print("\n .cdsinit is up to date. Nothing to update\n\n\n");

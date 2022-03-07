@@ -19,3 +19,6 @@ ASSIGN avTech           DISPLAY         Tech_lib
 DEFINE TechLibs                         /CAD/apps7/etc/dummyLibs/TechLibs
 ASSIGN TechLibs         DISPLAY         Tech_top
 ASSIGN TechLibs         COMBINE         tsmcN28 avTech 
+
+# AMPERE PROJECT
+DEFINE AMPERE_SIT       /home/nfs2/trainings/T28HPC/22_1/work/ptraining/AMPERE_SIT

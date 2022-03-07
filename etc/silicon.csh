@@ -18,13 +18,12 @@ if ( "${path}" !~ */CAD/apps7/bin* ) then
     set path = (/CAD/apps7/bin $path)
 endif
 
-#Check if /local exists
-if (! -d /home/local) then
-   echo "WARNING /home/local DOES NOT EXISTS.."
-   echo "Ask root to create  /home/local and change the group/permission to:"
-   echo ">sudo chmod 775 /home/local; chgrp eng /home/local"
-   echo "OR"
-   echo "Use the script /CAD/apps7/bin/create-local"
+#Check if /home/local/simulation exists
+set localsim = /home/local/simulation/$USER 
+if (! -d $localsim ) then
+   #echo "!!WARNING!! /home/local/simulation/"$USER" DOES NOT EXISTS.."
+   #echo "Creating it..."
+   mkdir $localsim
 endif
 
 ## Project Alias's
@@ -34,4 +33,6 @@ alias amp	'module load projects/ampere-rev1'
 alias fman	'module load projects/feynman-rev1'
 alias fman-tt	'module load projects/feynman-rev1-tt'
 ##Training Aliases
-alias t28-22-1	'module load trainings/t28hpc-22-1'
+alias t28-22-1		'module load trainings/t28hpc-22-1'
+alias xc06-22-1		'module load trainings/xc06-22-1'
+alias xt18-22-1		'module load trainings/xt018-22-1'
