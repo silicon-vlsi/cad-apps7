@@ -2,5 +2,6 @@
 // File Format:
 // Training 	Year	Technology	Module	Environmment Module	alias 		Fab	EDA	Comment
 //-------------------------------------------------------------------------------------------------------------------------------------------
+SKY130		22_1	sky130		0	trainings/sky-22-1	sky-22-1	sky	open	/home/nfs2/trainings	0.13um/CMOS
 XC06		22_1	xc06m3		0	trainings/xc06-22-1	xc06-22-1	xfab	ic618	/home/nfs2/trainings	0.6um/3M/CMOS
 XT018		22_1	xt018		1243	trainings/xt018-22-1	xt18-22-1	xfab	ic618	/home/nfs2/trainings	0.18um-200V-SOI

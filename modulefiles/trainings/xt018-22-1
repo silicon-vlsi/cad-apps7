@@ -16,7 +16,7 @@ module-whatis	"Sets up the environment for XFAB XT018 (0.18um CMOS 200v SOI) for
 # for Tcl script use only
 set     version      "1.0"
 
-conflict projects 
+conflict trainings 
 
 
 #CDSLICPORT is set in /CAD/apps7/etc/silicon.csh (linked to /etc/profile.d)
