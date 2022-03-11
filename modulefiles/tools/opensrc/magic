@@ -1,0 +1,25 @@
+#%Module1.0#####################################################################
+##
+## null modulefile
+##
+## modulefiles/null.  Generated from null.in by configure.
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up Magic Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis	"Sets up the Magic Environment"
+
+# for Tcl script use only
+set     version      "8.3.274"
+
+#conflict MMSIM
+
+#
+setenv	MAGIC_HOME /CAD/opensrc/eda-magic/centos7x64
+setenv	CAD_ROOT  $env(MAGIC_HOME)/lib
+append-path PATH  $env(MAGIC_HOME)/bin
+

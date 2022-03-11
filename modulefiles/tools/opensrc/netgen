@@ -1,0 +1,24 @@
+#%Module1.0#####################################################################
+##
+## null modulefile
+##
+## modulefiles/null.  Generated from null.in by configure.
+##
+proc ModulesHelp { } {
+        global version
+
+        puts stderr "\tThis module sets up netgen Env."
+        puts stderr "\n\tVersion $version\n"
+}
+
+module-whatis	"Sets up the netgen Environment"
+
+# for Tcl script use only
+set     version      "1.5.219"
+
+#conflict MMSIM
+
+#
+setenv	NETGEN_HOME /CAD/opensrc/eda-netgen/centos7x64
+append-path PATH  $env(NETGEN_HOME)/bin
+

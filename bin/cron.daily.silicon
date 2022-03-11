@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/bin/rsync --delete -av /CAD/docs /home/local/
