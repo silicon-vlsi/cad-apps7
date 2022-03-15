@@ -11,7 +11,8 @@ chomp($today);
 my @help_str = <<HELP;
 
 DESCRIPTION: Creates project area, if it doesn't exist, from a list 
-	     of approved projects listed in /CAD/apps7/bin/proj.list 
+	     of approved projects listed in /CAD/apps7/bin/training.list(default)
+             project.list for all the projects 
              in /home/NIS/projects/<PROJNAME>/<REV>/work/<USER>
 
 USAGE:   $0 [OPTIONS]    # creates project area
@@ -27,8 +28,9 @@ USAGE:   $0 [OPTIONS]    # creates project area
          -h   # This help 
 
 NOTE:
-	Before running the script, mkdir /home/nfs1/projects/<PROJNAME>/<REV>/work and 
-	change owner/group to chmod 775 work
+	Before running the script, 
+        pproj> mkdir /home/nfs1/projects/<PROJNAME>/<REV>/work and 
+	pproj> chmod g=swrx,+t .../work
         PROJNAME and REV should be in uppercase although it maybe lower in proj.list
 HELP
 

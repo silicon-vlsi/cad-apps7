@@ -39,12 +39,15 @@ setenv  WORKPATH		/home/nfs2/trainings/$env(TRAINING)/$env(YEAR)/work/$env(USER)
 # NOTE: ASSURA license is included in PVS
 # EXT: QRC extraction
 
-module load tools/IC/618		
+#**NOTE**IC/618 crashes during DRC
+#module load tools/IC/618		
+module load tools/IC/618-ISR7		
 module load tools/MMSIM/151		
 #module load tools/INCISIVE/152		
 module load tools/ASSURA/41-618		
 module load tools/PVS/19-14-ISR4
 module load tools/EXT/19-13		
+module load tools/calibre/2021-4-33-16
 
 # other changes to search path
 prepend-path	PATH	$env(X_DIR)/x_all/cadence/xenv

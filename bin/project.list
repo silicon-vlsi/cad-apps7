@@ -10,3 +10,6 @@ FEYNMAN		REV1		xt018		1243	project/feynman-rev1-tt		fman-tt		xfab	tt20	/home/nfs
 AMPERE		REV1		t28hpc		0	project/ampere-rev1		amp		tsmc	ic618	/home/nfs1/projects	28nm/CMOS/HPC+RF/Innatera
 TESLA		REV1		xdh10		2	project/tesla-rev1-tt		tesla-tt	xfab	tt20	/home/nfs1/projects	1um-650V-BCD
 T28HPC		22_1		t28hpc		0	trainings/t28hpc-22-1		t28-22-1	tsmc	ic618	/home/nfs2/trainings	28nm/CMOS/HPC+RF/
+FEYNMAN		REV2		xt018		1243	project/feynman-rev2		fman2		xfab	ic618	/home/nfs1/projects	0.18um-SOI/Feynman-rev1/TO
+FEYNMAN		REV2		xt018		1243	project/feynman-rev2-tt		fman2-tt	xfab	tt20	/home/nfs1/projects	0.18um-SOI/Feynman-rev1/TO
+
