@@ -123,7 +123,7 @@ fi
 if [ $1 == "localsim" ] || [ $1 == "all" ]
 then
   echo "SETTING UP /home/local/simulation..."
-  if [ ! -d /home/local/simulation]
+  if [ ! -d /home/local/simulation ]
   then
     mkdir -p /home/local/simulation
   fi
