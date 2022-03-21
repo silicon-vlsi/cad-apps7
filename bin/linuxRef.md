@@ -1,6 +1,8 @@
 # About
 Linux quick reference on some most used commands
 
+- `unix-cmd > output.log 2> error.log` : redirection of **stdout to output.log** and **stderr to error.log** 
+- `chown -R <owner>:<group> <dir>` : Will recursively change __owner__ and __group__ of files and directories.
 - `chmod -R a+rX` : will recursively __append_ read/execute(rX) for all (a) ie. user/group/other directories (X) and append only read for files only. **NOTE** This will not change __dot__ files.
 - `tar -o ...` : -o option will overwrite the ownership to the one who is untaring right now.
 - `find . -type d -name .svn -exec rm -rf {}\;`
