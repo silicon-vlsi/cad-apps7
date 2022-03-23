@@ -1,0 +1,8 @@
+#Information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command
+#min(0-59) h(0-23) dom(1-31) mon(1-12) dow(0-6,0-sun) command
+SHELL=/bin/sh
+## Sync /CAD /PDK from srv01 everyday at 4am
+00 04 * * * /usr/bin/rsync -avz --delete /CAD/ srv03:/cad/CAD1 > /var/log/rsync-cad.log 2> /var/log/rsync-cad.err
+00 04 * * * /usr/bin/rsync -avz --delete /PDK/ srv03:/pdk/PDK1 > /var/log/rsync-pdk.log 2> /var/log/rsync-pdk.err
