@@ -21,40 +21,99 @@ fi
 
 if [ $1 == "addhosts" ] || [ $1 == "all" ]
 then
-  echo "ADDING hostnames in /etc/hosts"
-  cat >> /etc/hosts <<EOF
+  echo "#################################"
+  echo "# CHECKING /etc/hosts #"
+  echo "#################################"
+  if grep -q srv02.vlsi.silicon.ac.in /etc/hosts ; then
+    echo "/etc/hosts seems to populated with the following:"
+    cat /etc/hosts
+  else
+    echo "ADDING hostnames in /etc/hosts"
+    cat >> /etc/hosts <<EOF
 192.168.11.221  srv01.vlsi.silicon.ac.in srv01
 192.168.11.229  srv02.vlsi.silicon.ac.in srv02 srv02.silicon.ac.in cdslicserv mgclicsrv.vlsi.silicon.ac.in mgclicserv
 192.168.11.237  srv03.vlsi.silicon.ac.in srv03
 EOF
-
+  fi
 fi
 
 
 if [ $1 == "mkmnt" ] || [ $1 == "all" ]
 then
-  mkdir /CAD
-  chown nfsnobody:nfsnobody /CAD
-  mkdir /PDK
-  chown nfsnobody:nfsnobody /PDK
-  mkdir /home/nfs1
-  chown nfsnobody:nfsnobody /home/nfs1
-  mkdir /home/nfs2
-  chown nfsnobody:nfsnobody /home/nfs2
+  echo "#################################"
+  echo "# CHECKING MOUNTS /CAD /PDK /home/nfs1 /home/nfs2 #"
+  echo "#################################"
+  if [ ! -d /CAD ] ; then
+    mkdir /CAD
+    chown nfsnobody:nfsnobody /CAD
+  else
+    echo "Directory /CAD exists.. Checking permissions"
+    perm=`ls -ald /CAD | awk '{print $3$4}'`
+    if [ $perm == "nfsnobodynfsnobody" ] ; then
+      echo "Permision looks fine .. check below.."
+      ls -ald /CAD
+    else
+      chown nfsnobody:nfsnobody /CAD
+    fi
+  fi
+  if [ ! -d /PDK ] ; then
+    mkdir /PDK
+    chown nfsnobody:nfsnobody /PDK
+  else
+    echo "Directory /PDK exists.. Checking permissions"
+    perm=`ls -ald /PDK | awk '{print $3$4}'`
+    if [ $perm == "nfsnobodynfsnobody" ] ; then
+      echo "Permision looks fine .. check below.."
+      ls -ald /PDK
+    else
+      chown nfsnobody:nfsnobody /PDK
+    fi
+  fi
+  if [ ! -d /home/nfs1 ] ; then
+    mkdir /home/nfs1
+    chown nfsnobody:nfsnobody /home/nfs1
+  else
+    echo "Directory /PDK exists.. Checking permissions"
+    perm=`ls -ald /home/nfs1 | awk '{print $3$4}'`
+    if [ $perm == "nfsnobodynfsnobody" ] ; then
+      echo "Permision looks fine .. check below.."
+      ls -ald /home/nfs1
+    else
+      chown nfsnobody:nfsnobody /home/nfs1
+    fi
+  fi
+  if [ ! -d /home/nfs2 ] ; then
+    mkdir /home/nfs2
+    chown nfsnobody:nfsnobody /home/nfs2
+  else
+    echo "Directory /PDK exists.. Checking permissions"
+    perm=`ls -ald /home/nfs2 | awk '{print $3$4}'`
+    if [ $perm == "nfsnobodynfsnobody" ] ; then
+      echo "Permision looks fine .. check below.."
+      ls -ald /home/nfs2
+    else
+      chown nfsnobody:nfsnobody /home/nfs2
+    fi
+  fi
 fi
 
 
 if [ $1 == "fstab" ] || [ $1 == "all" ]
 then
-  echo "ADDING MOUNT POINTS TO /etc/fstab"
-  cat >> /etc/fstab <<EOF
+  echo "#################################"
+  echo "# ADDING MOUNT POINTS TO /etc/fstab #"
+  echo "#################################"
+  if grep -q "srv01:/home/nfs1" /etc/fstab ; then
+    echo "/etc/fstab looks fine .. check"
+  else
+    cat >> /etc/fstab <<EOF
 # NFS mounts from srv01.vlsi.silicon.ac.in
 srv01:/home/nfs1  /home/nfs1      nfs     noatime,rsize=32768,wsize=32768
 srv01:/home/nfs2  /home/nfs2      nfs     noatime,rsize=32768,wsize=32768
-srv01:/CAD        /CAD            nfs     noatime,rsize=32768,wsize=32768
-srv01:/PDK        /PDK            nfs     noatime,rsize=32768,wsize=32768
+srv03:/cad/CAD1        /CAD            nfs     noatime,rsize=32768,wsize=32768
+srv03:/pdk/PDK1        /PDK            nfs     noatime,rsize=32768,wsize=32768
 EOF
-
+  fi 
 mount -a
 fi
 
@@ -62,7 +121,7 @@ if [ $1 == "pkg" ] || [ $1 == "all" ]
 then
   echo "CHECKING AND INSTALLING PACKAGES:"
 pckarr=( \
-  environment-modules tree tigervnc-server subversion \
+  environment-modules tree tigervnc-server subversion git \
   numpy python-matplotlib tcl tk ypbind rpcbind \
   glibc glibc.i686 elfutils-libelf ksh mesa-libGL \ 
   mesa-libGLU motif libXp libpng libjpeg-turbo \
@@ -107,16 +166,26 @@ fi
 
 if [ $1 == "nis" ] || [ $1 == "all" ]
 then
-  echo "SETTING UP NIS CLIENT"
-  # Setup NIS client
-  ypdomainname vlsi.silicon.ac.in
-  echo "NISDOMAIN=vlsi.silicon.ac.in" >> /etc/sysconfig/network
-  authconfig --enablenis --nisdomain=vlsi.silicon.ac.in --nisserver=srv01.vlsi.silicon.ac.in --update
-  systemctl start rpcbind ypbind
-  systemctl enable rpcbind ypbind
+  if [ "$nissrv" == "srv01.vlsi.silicon.ac.in" ] ; then
+    nissrv=`ypwhich`
+    echo "NIS Server is set to $nissrv"
+  else
+    thishost=`hostname`
+    if [ ! $thishost == "srv01.vlsi.silicon.ac.in" ] ; then
+      echo "SETTING UP NIS CLIENT"
+      # Setup NIS client
+      ypdomainname vlsi.silicon.ac.in
+      echo "NISDOMAIN=vlsi.silicon.ac.in" >> /etc/sysconfig/network
+      authconfig --enablenis --nisdomain=vlsi.silicon.ac.in --nisserver=srv01.vlsi.silicon.ac.in --update
+      systemctl start rpcbind ypbind
+      systemctl enable rpcbind ypbind
 
-  echo "NIS SERVER SET TO:"
-  ypwhich
+      echo "NIS SERVER SET TO:"
+      ypwhich
+    else
+      echo "This is the NIS server so client cannot be set here"
+    fi
+  fi
 fi
 
 

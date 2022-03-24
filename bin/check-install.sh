@@ -103,7 +103,7 @@ echo "*************************************"
 echo "CHECKING INSTALLED PACKAGES"
 echo "*************************************"
 pckarr=( \
-  environment-modules tree tigervnc-server subversion \
+  environment-modules tree tigervnc-server subversion git \
   numpy python-matplotlib tcl tk ypbind rpcbind \
   glibc glibc.i686 elfutils-libelf ksh mesa-libGL \ 
   mesa-libGLU motif libXp libpng libjpeg-turbo \

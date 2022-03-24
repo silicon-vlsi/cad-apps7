@@ -1,0 +1,4 @@
+#!/bin/sh
+## Sync /CAD /PDK from srv01 everyday at 4am
+/usr/bin/rsync -avz --delete /CAD/ srv03:/cad/CAD1 > /var/log/rsync-cad.log 2> /var/log/rsync-cad.err
+/usr/bin/rsync -avz --delete /PDK/ srv03:/pdk/PDK1 > /var/log/rsync-pdk.log 2> /var/log/rsync-pdk.err
