@@ -24,6 +24,18 @@ then
   echo "#################################"
   echo "# CHECKING /etc/hosts #"
   echo "#################################"
+  # CHeck if the current host is in /etc/hosts
+  thishost=`hostname`
+  if grep -q $thishost /etc/hosts ; then
+    echo "This host exists in /etc/hosts"
+  else
+    echo "This host **DOES NOT** exists in /etc/hosts adding ..."
+    ethdev=`nmcli connection show --active | grep ethernet | awk '{print $1}'`
+    ipaddr=`nmcli -g ipv4.addresses connection show $ethdev`
+    echo "$ipaddr $thishost" >> /etc/hosts
+  fi
+  # Check if servers are on /etc/hosts
+  echo "Checking if servers are in /etc/hosts"
   if grep -q srv02.vlsi.silicon.ac.in /etc/hosts ; then
     echo "/etc/hosts seems to populated with the following:"
     cat /etc/hosts
