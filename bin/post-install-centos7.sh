@@ -212,8 +212,19 @@ then
   chmod g=swrx,+t /home/local/simulation
 
   # set quota for the /home/local/simulation
-  echo 01:/home/local/simulation >> /etc/projects
-  echo localsim:01 >> /etc/projid
+  if grep -q "01:/home/local/simulation" /etc/projects ; then
+    echo ""
+  else
+    echo 01:/home/local/simulation >> /etc/projects
+    echo localsim:01 >> /etc/projid
+  fi
+  # Now set the quota
+  echo "Adding quota for /home/local/simulation..."
+  xfs_quota -x -c 'project -s localsim' /home
+  xfs_quota -x -c 'limit -p bsoft=95G bhard=100G localsim' /home
+  echo ""
+  echo "Quota report for /home..."
+  xfs_quota -x -c 'report -h' /home
 fi
 
 
