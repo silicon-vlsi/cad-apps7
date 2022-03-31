@@ -32,6 +32,7 @@ alias tesla-tt	'module load projects/tesla-rev1-tt'
 alias amp	'module load projects/ampere-rev1'
 alias fman	'module load projects/feynman-rev1'
 alias fman-tt	'module load projects/feynman-rev1-tt'
+alias fman2	'module load projects/feynman-rev2'
 ##Training Aliases
 alias sky-22-1		'module load trainings/sky-22-1'
 alias t28-22-1		'module load trainings/t28hpc-22-1'
