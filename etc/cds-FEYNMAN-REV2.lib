@@ -1,0 +1,58 @@
+# ------------------------------------------------------------------------------
+# All Tapeout Libraries that need to be shared project-wide for BM1UV 
+# are assigned here under the specific Combine/Diplay Name BM1UV 
+# ------------------------------------------------------------------------------
+DEFINE  BM1UVic6Libs            /CAD/apps7/etc/dummyLibs/projLibs
+ASSIGN  BM1UVic6Libs            BM1UVic6_top
+ASSIGN  BM1UV_A0_all_ic6        DISPLAY BM1UVic6Libs
+ASSIGN  BM1UV_A0_common         DISPLAY BM1UVic6Libs
+ASSIGN  BM1UV_A0_srout          DISPLAY BM1UVic6Libs
+ASSIGN  BM1UV_A0_TOP_layout     DISPLAY BM1UVic6Libs
+ASSIGN  sevya2019               DISPLAY BM1UVic6Libs
+ASSIGN  SPI_PROJECT_2020_srout  DISPLAY BM1UVic6Libs
+DEFINE  BM1UV_A0_all_ic6        /home/nfs1/projects/FEYNMAN/REV1/work/pfeynman/BM1UV_A0_all_ic6        
+DEFINE  BM1UV_A0_common         /home/nfs1/projects/FEYNMAN/REV1/work/pfeynman/BM1UV_A0_common         
+DEFINE  BM1UV_A0_srout          /home/nfs1/projects/FEYNMAN/REV1/work/pfeynman/BM1UV_A0_srout          
+DEFINE  BM1UV_A0_TOP_layout     /home/nfs1/projects/FEYNMAN/REV1/work/pfeynman/BM1UV_A0_TOP_layout     
+DEFINE  sevya2019               /home/nfs1/projects/FEYNMAN/REV1/work/pfeynman/sevya2019               
+DEFINE  SPI_PROJECT_2020_srout  /home/nfs1/projects/FEYNMAN/REV1/work/pfeynman/SPI_PROJECT_2020_srout  
+
+ASSIGN  BM1UVic6Libs               COMBINE BM1UV_A0_all_ic6 BM1UV_A0_common BM1UV_A0_srout BM1UV_A0_TOP_layout sevya2019 SPI_PROJECT_2020_srout 
+
+# ------------------------------------------------------------------------------
+# Tanner Libs 
+# ------------------------------------------------------------------------------
+DEFINE TannerLibs       /CAD/apps7/etc/dummyLibs/proj2Libs
+ASSIGN TannerLibs       Tanner_Top
+ASSIGN A0_clkgen 	DISPLAY TannerLibs
+ASSIGN A0_common 	DISPLAY TannerLibs
+ASSIGN A0_dig 		DISPLAY TannerLibs
+ASSIGN A0_iso 		DISPLAY TannerLibs
+ASSIGN A0_spi 		DISPLAY TannerLibs
+ASSIGN A0_stage1 	DISPLAY TannerLibs
+ASSIGN A0_top 		DISPLAY TannerLibs
+ASSIGN A0_tsense 	DISPLAY TannerLibs
+ASSIGN BM1UV_A0_all	DISPLAY TannerLibs
+
+
+# Feynman Libs used for the tapeout
+DEFINE A0_clkgen 	/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_clkgen
+DEFINE A0_common 	/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_common
+DEFINE A0_dig 		/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_dig
+DEFINE A0_iso 		/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_iso
+DEFINE A0_spi 		/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_spi
+DEFINE A0_stage1 	/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_stage1
+DEFINE A0_top 		/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_top
+DEFINE A0_tsense 	/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/A0_tsense
+DEFINE BM1UV_A0_all	/home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/FEYNMAN_REV1_svn/BM1UV_A0_all
+DEFINE etc	        /home/nfs1/projects/FEYNMAN/REV1/work/tt-pfeynman/.xkit/setup/xt018/tanner/PDK/etc
+
+ASSIGN TannerLibs       COMBINE A0_clkgen A0_common A0_dig A0_iso A0_spi A0_stage1 A0_top A0_tsense BM1UV_A0_all etc	   
+
+# ------------------------------------------------------------------------------
+# All User Libraries that need to be shared project-wide for XC06M3-18-A0
+# are assigned here under the specific Combine/Diplay Name XC06M3 
+# ------------------------------------------------------------------------------
+#
+#DEFINE  Verilog-A       $CSDHOME/tools/dfII/samples/artist/spectreHDL/Verilog-A
+DEFINE  bmslib          $CDSHOME/tools/dfII/samples/artist/bmslib
