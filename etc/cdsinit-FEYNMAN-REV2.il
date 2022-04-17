@@ -1,3 +1,6 @@
+;Load the calibre menu
+loadi("/CAD/apps7/etc/cdsinit-calibre.il")
+
 ;The following customization creates default label [@cellName] in symbols
 ; which is not in the default IC616 installation
 ; Followed this: https://support.cadence.com/apex/ArticleAttachmentPortal?id=a1Od0000007MbpAEAS&pageName=ArticleContent&sq=0050V000006mDk8QAE_201862373422325

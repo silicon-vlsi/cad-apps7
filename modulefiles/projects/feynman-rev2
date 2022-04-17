@@ -24,7 +24,7 @@ conflict projects
 set 	license_server     	cdslicsrv.vlsi.silicon.ac.in
 setenv	CDS_LICENSE_FILE  	$env(CDSLICPORT)@${license_server}
 #
-setenv 	X_DIR			/PDK/xfab/XKIT
+setenv 	X_DIR			/PDK/tech_svn/xfab/XKIT
 # T_DIR is obsolete for XENV but the .rsf file in LVS still contains that.
 setenv 	T_DIR		 	$env(X_DIR)	
 setenv  PROJECT			FEYNMAN
@@ -44,6 +44,13 @@ module load tools/MMSIM/151
 module load tools/ASSURA/41-618		
 module load tools/PVS/19-14-ISR4
 module load tools/EXT/19-13		
+module load tools/calibre/2021-4-33-16
+
+
+#Set Calibre rule file paths
+setenv CALIBRE_DRC_RULE_FILE	$env(WORKPATH)/Calibre/drc/calibre.drc_sit
+setenv CALIBRE_LVS_RULE_FILE	$env(WORKPATH)/Calibre/lvs/calibre.lvs
+setenv CALIBRE_RCX_RULE_FILE	$env(WORKPATH)/Calibre/rcx/calibre.rcx.sit
 
 # other changes to search path
 prepend-path	PATH	$env(X_DIR)/x_all/cadence/xenv
